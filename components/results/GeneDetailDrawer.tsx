@@ -2,6 +2,7 @@
 
 import type { PublicRankedGene } from "@/lib/ranking/types";
 
+import { GeneCardsAnnotationPanel } from "./GeneCardsAnnotationPanel";
 import { LiteratureEvidence } from "./LiteratureEvidence";
 import { MatchedPhenotypes } from "./MatchedPhenotypes";
 import { ScoreBreakdown } from "./ScoreBreakdown";
@@ -94,6 +95,8 @@ export function GeneDetailDrawer({
             <LiteratureEvidence evidence={result.literatureEvidence} />
           </div>
         </section>
+
+        <GeneCardsAnnotationPanel annotations={result.gene.licensedGeneCardsAnnotations} />
 
         <section className="mt-6">
           <h3 className="text-lg font-semibold text-slate-950">Warnings and limitations</h3>

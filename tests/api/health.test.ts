@@ -13,6 +13,13 @@ describe("GET /api/health", () => {
       ok: true,
       data: {
         status: "ok",
+        build: {
+          appVersion: expect.any(String),
+        },
+        deployment: {
+          warningsCount: expect.any(Number),
+          errorCount: expect.any(Number),
+        },
         database: { configured: true, reachable: true },
         data: {
           seeded: true,

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { okEnvelope } from "@/lib/api/response";
 import { prisma } from "@/lib/db/prisma";
+import { getBuildInfo } from "@/lib/deployment/build-info";
 import { HGNC_SOURCE_NAME } from "@/lib/genes/repository";
 import { HPO_SOURCE_NAMES } from "@/lib/hpo/constants";
 import { getDataSourceVersions } from "@/lib/hpo/repository";
@@ -27,6 +28,7 @@ export async function GET() {
 
   return NextResponse.json(
     okEnvelope({
+      build: getBuildInfo(),
       phenotypeExtraction: {
         deterministicMatcher: true,
         requiresConfirmation: phenotypeConfig.requireConfirmation,

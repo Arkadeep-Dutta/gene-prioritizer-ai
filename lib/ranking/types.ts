@@ -1,4 +1,5 @@
 import type { GeneLinkouts, GeneValidationStatus } from "@/lib/genes/types";
+import type { LicensedGeneCardsAnnotation } from "@/lib/genecards/types";
 import type { LiteratureEvidenceForGene } from "@/lib/literature/types";
 
 export const RANKING_MODES = [
@@ -103,6 +104,7 @@ export type RankedGene = {
     validationStatus: GeneValidationStatus;
     hgncId: string | null;
     links: GeneLinkouts | null;
+    licensedGeneCardsAnnotations?: LicensedGeneCardsAnnotation[];
   };
   score: number;
   scoreLabel: string;

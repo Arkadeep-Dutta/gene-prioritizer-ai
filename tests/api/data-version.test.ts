@@ -13,6 +13,9 @@ describe("data version and health API safety", () => {
     expect(body).toMatchObject({
       ok: true,
       data: {
+        build: {
+          appVersion: expect.any(String),
+        },
         imported: {
           hpoOntology: true,
           hpoGeneAssociations: true,

@@ -5,6 +5,10 @@ import { errorEnvelope, okEnvelope } from "@/lib/api/response";
 import { GeneValidationError } from "@/lib/genes/errors";
 import { MAX_GENE_TEXT_LENGTH } from "@/lib/genes/normalize";
 import { validateGeneSymbols } from "@/lib/genes/validate-gene-symbols";
+import { getSecurityConfig } from "@/lib/security/config";
+import { requestParsingErrorResponse } from "@/lib/security/errors";
+import { enforceRateLimit } from "@/lib/security/rate-limit";
+import { readJsonWithLimit } from "@/lib/security/request";
 
 export const dynamic = "force-dynamic";
 
@@ -19,12 +23,28 @@ const geneValidationRequestSchema = z
 
 export async function POST(request: Request) {
   try {
-    const body = geneValidationRequestSchema.parse(await request.json());
+    const limited = enforceRateLimit(request, "geneValidate");
+    if (limited) return limited;
+
+    const body = geneValidationRequestSchema.parse(await readJsonWithLimit(request));
+    if ((body.genes?.length ?? 0) > getSecurityConfig().maxCandidateGenes) {
+      return NextResponse.json(
+        errorEnvelope(
+          { results: [], summary: null },
+          "GENE_LIMIT_EXCEEDED",
+          "Too many candidate genes were submitted.",
+        ),
+        { status: 400 },
+      );
+    }
     const input = body.genes ?? body.genesText ?? "";
     const validation = await validateGeneSymbols(input);
 
     return NextResponse.json(okEnvelope(validation));
   } catch (error) {
+    const requestError = requestParsingErrorResponse({ results: [], summary: null }, error);
+    if (requestError) return requestError;
+
     if (error instanceof GeneValidationError) {
       return NextResponse.json(
         errorEnvelope({ results: [], summary: null }, error.code, error.message),

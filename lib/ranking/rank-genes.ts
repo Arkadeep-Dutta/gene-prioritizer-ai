@@ -1,6 +1,7 @@
 import type { PrismaClient } from "@prisma/client";
 
 import { generateGeneLinkouts } from "@/lib/genes/linkouts";
+import { getLicensedGeneCardsAnnotationsForGene } from "@/lib/genecards/repository";
 import { getDataSourceVersions } from "@/lib/hpo/repository";
 import { getLiteratureConfig } from "@/lib/literature/config";
 import { searchLiterature } from "@/lib/literature/search";
@@ -211,6 +212,28 @@ async function enrichRankedGenesWithLiterature(
   };
 }
 
+async function enrichRankedGenesWithLicensedGeneCards(
+  prisma: PrismaClient,
+  ranked: RankedGene[],
+): Promise<RankedGene[]> {
+  const enriched: RankedGene[] = [];
+  for (const result of ranked) {
+    const annotations = await getLicensedGeneCardsAnnotationsForGene(prisma, result.gene.symbol, 3);
+    if (annotations.length === 0) {
+      enriched.push(result);
+      continue;
+    }
+    enriched.push({
+      ...result,
+      gene: {
+        ...result.gene,
+        licensedGeneCardsAnnotations: annotations,
+      },
+    });
+  }
+  return enriched;
+}
+
 function toCandidateOnlyResult(candidate: NormalizedCandidateGene, rank: number): RankedGene {
   const base: Omit<RankedGene, "explanation"> = {
     rank,
@@ -355,6 +378,7 @@ export async function rankGenes(
 
   const literatureEnrichment = await enrichRankedGenesWithLiterature(prisma, ranked, input);
   ranked = literatureEnrichment.ranked;
+  ranked = await enrichRankedGenesWithLicensedGeneCards(prisma, ranked);
 
   const warnings = [
     "Scores are deterministic prioritization scores, not diagnostic probabilities.",

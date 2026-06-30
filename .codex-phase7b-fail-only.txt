@@ -1,3 +1,0 @@
- FAIL  tests/literature/query-builder.test.ts > PubMed query builder > sanitizes PubMed syntax injection characters
- FAIL  tests/literature/repository.test.ts > literature repository > reads cached LiteratureRecord rows within the TTL
- FAIL  tests/literature/search.test.ts > literature search service > reuses query and metadata cache

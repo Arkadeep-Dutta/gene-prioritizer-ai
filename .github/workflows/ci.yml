@@ -4,6 +4,10 @@ on:
   push:
   pull_request:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
@@ -24,9 +28,13 @@ jobs:
       - run: npm run db:generate
       - run: npm run db:migrate:deploy
       - run: npm run data:seed
+      - run: npm run data:build-hpo
+      - run: npm run release:check
       - run: npm run lint
       - run: npm run typecheck
       - run: npm test
       - run: npm run build
       - run: npm run format:check
       - run: npm audit --audit-level=moderate
+      - run: npm run test:e2e
+      - run: npm run docker:build

@@ -205,8 +205,223 @@ After deployment, verify that `/` loads with the safety banner, the HPO-code wor
 synthetic terms, the free-text workflow requires HPO confirmation before ranking, the informational
 pages load, exports download, and health/version API routes do not expose secrets or file paths.
 
+## Phase 9 production hardening checklist
+
+Set these values explicitly in production secret/config stores:
+
+```env
+APP_ENV="production"
+SECURITY_HEADERS_ENABLED="true"
+CSP_ENABLED="true"
+CSP_REPORT_ONLY="false"
+TRUSTED_ORIGINS="https://your-app.example"
+ADMIN_INGEST_SECRET="<rotated-random-secret>"
+RATE_LIMIT_ENABLED="true"
+RATE_LIMIT_BACKEND="memory"
+LOG_RAW_INPUTS="false"
+LOG_REQUEST_BODIES="false"
+AUDIT_ADMIN_ACTIONS="true"
+```
+
+Never deploy with `ADMIN_INGEST_SECRET="change-me-in-production"` in production. Admin endpoints
+fail closed when the placeholder secret is used with `APP_ENV=production`.
+
+The built-in rate limiter is in-memory. It is real and useful for a single local/demo instance, but
+serverless or horizontally scaled production deployments need a shared backend such as Redis or
+Upstash before limits are reliable across instances.
+
+Security headers and CSP are emitted by `middleware.ts`. The CSP permits the app itself, development
+scripts in non-production, NCBI E-utilities, and HGNC. If you add analytics, CDNs, or other services,
+update `lib/security/csp.ts` deliberately and test the header.
+
+Admin endpoints:
+
+- `GET /api/admin/status` returns safe counts and hardening booleans.
+- `POST /api/admin/data/update` is protected and audit-logged but intentionally does not execute
+  shell commands or long imports from a request. Run `npm run data:update` from a controlled server
+  job instead.
+- Send the secret as `Authorization: Bearer <ADMIN_INGEST_SECRET>`.
+- Do not put admin secrets in URLs, localStorage, browser bookmarks, logs, screenshots, or
+  `NEXT_PUBLIC_*` variables.
+
+Post-deploy checks:
+
+```bash
+curl -I https://your-app.example/
+curl -i https://your-app.example/api/admin/status
+curl -i https://your-app.example/api/admin/status \
+  -H "Authorization: Bearer $ADMIN_INGEST_SECRET"
+curl -i https://your-app.example/robots.txt
+```
+
+Expected: security headers and CSP are present, unauthenticated admin access returns a safe 401,
+authenticated admin status contains no secrets or database URLs, and robots disallows `/api/` and
+`/admin/`.
+
+## Phase 10 licensed GeneCards import deployment
+
+Keep these defaults unless the deployment has confirmed GeneCards/GeneALaCart licensing:
+
+```env
+GENE_CARDS_LINKOUT_ENABLED="true"
+GENE_CARDS_LICENSED_IMPORT_ENABLED="false"
+GENE_CARDS_IMPORT_MAX_BYTES="5242880"
+GENE_CARDS_IMPORT_ALLOWED_EXTENSIONS=".csv,.tsv"
+GENE_CARDS_IMPORT_REQUIRE_LICENSE_CONFIRMATION="true"
+GENE_CARDS_IMPORT_STORE_RAW_FIELDS="true"
+GENE_CARDS_IMPORT_MAX_ROWS="50000"
+GENE_CARDS_IMPORT_ADMIN_ONLY="true"
+```
+
+To enable import, set `GENE_CARDS_LICENSED_IMPORT_ENABLED="true"` in the server environment only
+after confirming license rights. The import endpoint is `POST /api/import/genecards`, uses the
+admin bearer secret, accepts only uploaded CSV/TSV multipart files, and rejects remote URL import.
+Do not add browser scraping, batch querying, public GeneCards page fetches, or automated downloads.
+
+Back up the database before importing licensed data and include licensed tables in retention,
+deletion, access-control, and restore procedures. Treat imported files as operator-controlled
+licensed data, not public reference data. Test with the synthetic fixtures only unless a licensed
+admin supplies real export data outside source control.
+
 ## Production gate
 
-Before accepting case input or enabling future ranking, add rate limiting, backup/restore
-automation, log redaction, retention/deletion jobs, dependency scanning, health/readiness
-monitoring, and a threat/privacy review.
+Before accepting real case input, add backup/restore automation, retention/deletion jobs, shared
+production rate limiting, health/readiness monitoring, access controls, and a threat/privacy review.
+
+## Phase 11 deployment and release guide
+
+### Overview
+
+The app supports SQLite for local/demo development and PostgreSQL for production. Deployment targets
+are configured with `DEPLOYMENT_TARGET` (`local`, `codespaces`, `docker`, `vercel`, `railway`,
+`render`, or another descriptive value). `npm run deploy:check` reports production warnings without
+printing secret values.
+
+### Local and Codespaces
+
+```bash
+cp .env.example .env
+npm install
+npm run db:generate
+npm run db:migrate
+npm run data:seed
+npm run data:build-hpo
+npm run dev
+```
+
+Codespaces should forward port 3000 or the `PORT` you choose. The default admin secret is for local
+development only. If HPO raw files are absent, `data:build-hpo` imports bundled synthetic fixtures.
+
+### Docker Compose
+
+```bash
+cp .env.docker.example .env.docker
+# edit .env.docker and replace ADMIN_INGEST_SECRET
+npm run docker:build
+npm run docker:up
+SMOKE_BASE_URL=http://localhost:3000 npm run smoke:api
+npm run docker:down
+```
+
+Compose starts `postgres` with a persistent `postgres-data` volume and the `app` container with
+GeneCards licensed import disabled. It does not run destructive resets automatically. For a fresh
+PostgreSQL volume, run migrations from a trusted shell before relying on the app:
+
+```bash
+DATABASE_URL="postgresql://..." DIRECT_URL="postgresql://..." npm run db:migrate:prod
+```
+
+### Vercel
+
+Use Vercel for the Next.js app only with a managed PostgreSQL database. Do not use SQLite on Vercel
+production. Set at least:
+
+```env
+APP_ENV="production"
+NODE_ENV="production"
+DEPLOYMENT_TARGET="vercel"
+DATABASE_URL="postgresql://..."
+DIRECT_URL="postgresql://..."
+NEXT_PUBLIC_APP_URL="https://your-app.vercel.app"
+ADMIN_INGEST_SECRET="<rotated-secret>"
+DISABLE_LLM="true"
+GENE_CARDS_LICENSED_IMPORT_ENABLED="false"
+LOG_RAW_INPUTS="false"
+LOG_REQUEST_BODIES="false"
+```
+
+Run Prisma migrations from a trusted workstation, CI job, or database migration job before routing
+traffic. Do not run long HPO imports inside serverless requests. PubMed/HGNC outbound requests are
+optional runtime calls; CI and smoke tests do not require them by default. Memory rate limiting is
+per serverless instance; use a shared backend before public production traffic.
+
+### Railway and Render
+
+Create a Node service and a PostgreSQL database. Configure build command `npm ci && npm run build`
+and start command `npm run start` or the platform equivalent. Set `APP_ENV=production`,
+`DEPLOYMENT_TARGET=railway` or `render`, PostgreSQL `DATABASE_URL`/`DIRECT_URL`, a rotated
+`ADMIN_INGEST_SECRET`, and privacy-safe logging defaults.
+
+After provisioning:
+
+```bash
+npm run db:generate:postgres
+npm run db:migrate:prod
+npm run data:seed
+npm run data:build-hpo
+SMOKE_BASE_URL=https://your-app.example npm run smoke:api
+```
+
+Use the platform health check path `/api/health`. Keep database backups enabled before migrations
+and HPO/licensed-data imports.
+
+### Migration and data workflow
+
+SQLite local:
+
+```bash
+npm run db:generate
+npm run db:migrate
+npm run data:seed
+npm run data:build-hpo
+```
+
+PostgreSQL production:
+
+```bash
+npm run db:generate:postgres
+npm run db:migrate:prod
+npm run data:seed
+npm run data:build-hpo
+```
+
+For full HPO updates, run `npm run data:download-hpo` and `npm run data:update` from a controlled
+CLI environment against the intended database. Back up first. Do not run destructive resets or long
+imports automatically during web request handling.
+
+### Smoke tests and release
+
+`npm run smoke:api` checks `/`, `/api/health`, `/api/data/version`,
+`/api/phenotype/extract`, and `/api/prioritize` without live PubMed/HGNC/LLM requirements. Set
+`SMOKE_INCLUDE_NETWORK_TESTS=true` only when outbound services are expected.
+
+Before release:
+
+```bash
+npm run verify:full
+npm run release:check
+npm run docker:build
+```
+
+Use [docs/RELEASE_CHECKLIST.md](./docs/RELEASE_CHECKLIST.md) for the full rollout and rollback
+sequence.
+
+For release-candidate packaging, also review
+[docs/FINAL_AUDIT.md](./docs/FINAL_AUDIT.md),
+[docs/RELEASE_NOTES.md](./docs/RELEASE_NOTES.md), and
+[docs/RELEASE_CANDIDATE_CHECKLIST.md](./docs/RELEASE_CANDIDATE_CHECKLIST.md).
+
+### Troubleshooting
+
+See [docs/TROUBLESHOOTING.md](./docs/TROUBLESHOOTING.md) for SQLite lock cleanup, missing `.env`,
+HPO fixture fallback, port conflicts, Docker Compose notes, and production warning interpretation.

@@ -6,6 +6,7 @@
 .env.local
 .env.*.local
 !.env.example
+!.env.docker.example
 *.log
 *.tsbuildinfo
 .DS_Store
@@ -20,4 +21,18 @@ Thumbs.db
 /prisma/*.db-shm
 /prisma/*.db-wal
 /data/hpo/raw/
+/data/hpo/cache/
 /data/hpo/metadata/
+/playwright-report/
+/test-results/
+*.sqlite
+*.sqlite3
+*.db
+*.db-journal
+
+# Codex/debug scratch artifacts
+.codex*
+000_PHASE*
+AAA*
+CODEX_*
+FAILFILE*

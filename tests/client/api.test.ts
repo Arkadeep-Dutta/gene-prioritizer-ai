@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { requestJson } from "@/lib/client/api";
+import { getHpoTerm, requestJson } from "@/lib/client/api";
 
 describe("client API helper", () => {
   afterEach(() => {
@@ -53,5 +53,24 @@ describe("client API helper", () => {
       message: "Network request failed. Please try again.",
       code: "NETWORK_ERROR",
     });
+  });
+
+  it("looks up HPO terms through the local API", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          ok: true,
+          data: { hpoId: "HP:0001250", label: "Seizure" },
+          warnings: [],
+        }),
+        { status: 200 },
+      ),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    await expect(getHpoTerm("HP:0001250")).resolves.toMatchObject({
+      data: { hpoId: "HP:0001250", label: "Seizure" },
+    });
+    expect(fetchMock).toHaveBeenCalledWith("/api/hpo/term/HP%3A0001250", expect.any(Object));
   });
 });

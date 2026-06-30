@@ -2,17 +2,24 @@
 
 import { parseHpoCodes } from "./utils";
 
+export type ConfirmedHpoCodeDisplay = {
+  hpoId: string;
+  label: string | null;
+};
+
 export function HpoCodeInput({
   value,
-  confirmedCodes,
+  confirmedTerms,
+  loading = false,
   onChange,
   onAddCodes,
   onRemoveCode,
 }: Readonly<{
   value: string;
-  confirmedCodes: string[];
+  confirmedTerms: ConfirmedHpoCodeDisplay[];
+  loading?: boolean;
   onChange: (value: string) => void;
-  onAddCodes: (codes: string[]) => void;
+  onAddCodes: (codes: string[]) => void | Promise<void>;
   onRemoveCode: (code: string) => void;
 }>) {
   const parsed = parseHpoCodes(value);
@@ -44,29 +51,30 @@ export function HpoCodeInput({
       ) : null}
       <button
         type="button"
-        disabled={parsed.valid.length === 0}
+        disabled={parsed.valid.length === 0 || loading}
         onClick={() => onAddCodes(parsed.valid)}
         className="rounded-xl bg-slate-900 px-4 py-2 font-semibold text-white hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-cyan-500 disabled:cursor-not-allowed disabled:bg-slate-300"
       >
-        Add valid HPO codes
+        {loading ? "Validating HPO codes..." : "Add valid HPO codes"}
       </button>
-      {confirmedCodes.length > 0 ? (
+      {confirmedTerms.length > 0 ? (
         <div>
           <h3 className="text-sm font-semibold text-slate-900">Confirmed HPO list</h3>
           <ul className="mt-2 flex flex-wrap gap-2">
-            {confirmedCodes.map((code) => (
+            {confirmedTerms.map((term) => (
               <li
-                key={code}
+                key={term.hpoId}
                 className="rounded-full border border-cyan-200 bg-cyan-50 px-3 py-1 text-sm"
               >
-                {code}{" "}
+                {term.hpoId}
+                {term.label ? ` - ${term.label}` : ""}{" "}
                 <button
                   type="button"
                   className="ml-2 font-semibold text-cyan-900"
-                  onClick={() => onRemoveCode(code)}
-                  aria-label={`Remove ${code}`}
+                  onClick={() => onRemoveCode(term.hpoId)}
+                  aria-label={`Remove ${term.hpoId}`}
                 >
-                  ×
+                  x
                 </button>
               </li>
             ))}

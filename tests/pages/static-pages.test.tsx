@@ -2,11 +2,13 @@ import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
 import AboutPage from "@/app/about/page";
+import AdminDataPage, { metadata as adminMetadata } from "@/app/admin/data/page";
 import DataSourcesPage from "@/app/data-sources/page";
 import DisclaimerPage from "@/app/disclaimer/page";
 import HomePage from "@/app/page";
 import MethodologyPage from "@/app/methodology/page";
 import PrivacyPage from "@/app/privacy/page";
+import robots from "@/app/robots";
 import SecurityPage from "@/app/security/page";
 
 vi.mock("@/components/workflow/GenePrioritizerWorkflow", () => ({
@@ -55,5 +57,12 @@ describe("informational pages", () => {
     render(<SecurityPage />);
     expect(screen.getByRole("heading", { name: /security/i })).toBeInTheDocument();
     expect(screen.getByText(/No hardcoded secrets/i)).toBeInTheDocument();
+  });
+
+  it("renders noindex admin data page and robots protections", () => {
+    render(<AdminDataPage />);
+    expect(screen.getByRole("heading", { name: /admin data status/i })).toBeInTheDocument();
+    expect(adminMetadata.robots).toEqual({ index: false, follow: false });
+    expect(robots().rules).toEqual([{ userAgent: "*", disallow: ["/api/", "/admin/"] }]);
   });
 });

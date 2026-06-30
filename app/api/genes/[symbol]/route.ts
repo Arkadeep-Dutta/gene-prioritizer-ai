@@ -6,6 +6,7 @@ import { generateGeneLinkouts } from "@/lib/genes/linkouts";
 import { normalizeGeneSymbol } from "@/lib/genes/normalize";
 import { getGeneDetailBySymbolOrAlias } from "@/lib/genes/repository";
 import { validateGeneSymbols } from "@/lib/genes/validate-gene-symbols";
+import { getLicensedGeneCardsAnnotationsForGene } from "@/lib/genecards/repository";
 
 export const dynamic = "force-dynamic";
 
@@ -13,7 +14,14 @@ type RouteContext = {
   params: Promise<{ symbol: string }>;
 };
 
-function toGeneDetail(gene: NonNullable<Awaited<ReturnType<typeof getGeneDetailBySymbolOrAlias>>>) {
+async function toGeneDetail(
+  gene: NonNullable<Awaited<ReturnType<typeof getGeneDetailBySymbolOrAlias>>>,
+) {
+  const licensedGeneCardsAnnotations = await getLicensedGeneCardsAnnotationsForGene(
+    prisma,
+    gene.symbol,
+  );
+
   return {
     symbol: gene.symbol,
     name: gene.name,
@@ -49,6 +57,7 @@ function toGeneDetail(gene: NonNullable<Awaited<ReturnType<typeof getGeneDetailB
       ncbiGeneId: gene.ncbiGeneId,
       ensemblId: gene.ensemblId,
     }),
+    licensedGeneCardsAnnotations,
     warnings: gene.isValidated
       ? []
       : ["This local gene record has not been validated against HGNC."],
@@ -90,5 +99,5 @@ export async function GET(request: Request, context: RouteContext) {
     );
   }
 
-  return NextResponse.json(okEnvelope(toGeneDetail(gene)));
+  return NextResponse.json(okEnvelope(await toGeneDetail(gene)));
 }

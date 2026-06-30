@@ -113,3 +113,41 @@ The workflow UI displays HPO, HGNC, PubMed/NCBI, and local count/status informat
 search, PubMed search, and GeneCards linkout-only behavior when configured.
 
 The UI does not scrape GeneCards, does not fetch PubMed HTML, and does not fabricate citations.
+
+## Phase 9 hardening impact
+
+Security hardening does not add biomedical sources. It adds rate limits, request size limits,
+admin protection, audit logging, robots rules, and safer API responses around the existing HPO,
+HGNC, PubMed/NCBI, and linkout-only GeneCards behavior.
+
+No GeneCards scraping, PubMed scraping, OMIM ingestion, ClinVar ingestion, VCF analysis, Exomiser
+integration, or real patient data ingestion is added by Phase 9.
+
+## Phase 10 GeneCards/GeneALaCart licensed imports
+
+GeneCards is still linkout-only by default. Linkouts are generated locally from sanitized symbols
+when `GENE_CARDS_LINKOUT_ENABLED=true`; no network request is made.
+
+Optional licensed import accepts only admin-uploaded GeneCards/GeneALaCart CSV/TSV exports when
+`GENE_CARDS_LICENSED_IMPORT_ENABLED=true` and the admin confirms license permission at upload time.
+The app does not scrape, crawl, fetch, parse, mirror, batch-query, or download public GeneCards web
+pages, and it does not train on GeneCards content.
+
+Imported annotations are stored in `LicensedGeneCardsImport` and
+`LicensedGeneCardsGeneAnnotation`, separate from HPO, HGNC, and PubMed evidence. Gene detail views
+and JSON/CSV/Markdown exports may show labeled licensed annotations when present, but they are not
+diagnostic evidence and do not change deterministic ranking scores.
+
+## Phase 11 deployment data operations
+
+Local and CI verification can run entirely on bundled synthetic HPO fixtures. Production data
+updates should run from trusted CLI jobs:
+
+```bash
+npm run data:download-hpo
+npm run data:update
+```
+
+HGNC validation and PubMed literature search remain optional outbound services. Missing API keys do
+not block local deployment. GeneCards licensed import remains disabled by default and must not be
+enabled unless the deployment has license rights and retention controls.

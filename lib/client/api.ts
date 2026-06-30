@@ -4,6 +4,7 @@ import type {
   DataVersionData,
   GeneValidationData,
   HealthData,
+  HpoTermLookupData,
   PrioritizeRequest,
 } from "./types";
 import type { PhenotypeExtractionResult } from "@/lib/phenotype/types";
@@ -64,6 +65,10 @@ export async function validateGenes(genes: string[]) {
     method: "POST",
     body: JSON.stringify({ genes }),
   });
+}
+
+export async function getHpoTerm(hpoId: string) {
+  return requestJson<HpoTermLookupData>(`/api/hpo/term/${encodeURIComponent(hpoId)}`);
 }
 
 export async function prioritizeGenes(request: PrioritizeRequest) {

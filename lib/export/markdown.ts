@@ -13,6 +13,9 @@ export function createMarkdownReport(input: ReportExportInput): string {
     "# Gene Prioritizer AI Report",
     "",
     `Generated: ${timestamp}`,
+    `App version: ${input.appVersion ?? input.build?.appVersion ?? "unknown"}`,
+    input.build?.buildCommitSha ? `Build commit: ${input.build.buildCommitSha}` : null,
+    input.build?.buildTime ? `Build time: ${input.build.buildTime}` : null,
     "",
     "## Safety disclaimer",
     "",
@@ -49,7 +52,7 @@ export function createMarkdownReport(input: ReportExportInput): string {
     "",
     "## Per-gene evidence",
     "",
-  ];
+  ].filter((line): line is string => line !== null);
 
   for (const result of input.rankedResults) {
     lines.push(`### ${result.rank}. ${result.gene.symbol}`, "");
@@ -64,6 +67,20 @@ export function createMarkdownReport(input: ReportExportInput): string {
           .filter(Boolean)
           .join(". ");
         lines.push(`- PMID ${record.pmid}: ${citation} ${record.url}`);
+      }
+      lines.push("");
+    }
+    if (result.gene.licensedGeneCardsAnnotations?.length) {
+      lines.push(
+        "Licensed GeneCards/GeneALaCart annotations:",
+        "- Source: User-provided licensed import",
+        "- Note: These annotations are not diagnostic evidence and do not override HPO/HGNC/PubMed evidence.",
+      );
+      for (const annotation of result.gene.licensedGeneCardsAnnotations) {
+        const fieldNames = Object.keys(annotation.fields);
+        lines.push(
+          `- Import ${escapeTableCell(annotation.importId)}: ${fieldNames.length} displayable field(s)`,
+        );
       }
       lines.push("");
     }

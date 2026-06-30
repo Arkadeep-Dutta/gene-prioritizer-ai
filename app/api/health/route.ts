@@ -3,6 +3,8 @@ import { NextResponse } from "next/server";
 import { errorEnvelope, okEnvelope } from "@/lib/api/response";
 import { isDatabaseConfigured } from "@/lib/db/env";
 import { prisma } from "@/lib/db/prisma";
+import { getBuildInfo } from "@/lib/deployment/build-info";
+import { getDeploymentWarnings } from "@/lib/deployment/env-check";
 import { HGNC_SOURCE_NAME } from "@/lib/genes/repository";
 import { HPO_SOURCE_NAMES } from "@/lib/hpo/constants";
 import { getLiteratureConfig, getNcbiConfig } from "@/lib/literature/config";
@@ -17,6 +19,8 @@ export async function GET() {
   const phenotypeConfig = getPhenotypeExtractionConfig();
   const literatureConfig = getLiteratureConfig();
   const ncbiConfig = getNcbiConfig();
+  const build = getBuildInfo();
+  const deploymentWarnings = getDeploymentWarnings();
 
   try {
     await prisma.$queryRaw`SELECT 1`;
@@ -51,6 +55,12 @@ export async function GET() {
     return NextResponse.json(
       okEnvelope({
         status: "ok",
+        build,
+        deployment: {
+          target: build.deploymentTarget,
+          warningsCount: deploymentWarnings.length,
+          errorCount: deploymentWarnings.filter((warning) => warning.severity === "error").length,
+        },
         database: { configured, reachable: true },
         data: {
           seeded: sources.length > 0,
@@ -103,6 +113,12 @@ export async function GET() {
       errorEnvelope(
         {
           status: "degraded",
+          build,
+          deployment: {
+            target: build.deploymentTarget,
+            warningsCount: deploymentWarnings.length,
+            errorCount: deploymentWarnings.filter((warning) => warning.severity === "error").length,
+          },
           database: { configured, reachable: false },
           data: {
             seeded: false,

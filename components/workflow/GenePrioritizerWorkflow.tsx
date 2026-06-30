@@ -11,6 +11,7 @@ import {
   extractPhenotypes,
   getDataVersions,
   getHealth,
+  getHpoTerm,
   prioritizeGenes,
   validateGenes,
 } from "@/lib/client/api";
@@ -91,10 +92,12 @@ function createReportInput(
   confirmedTerms: ConfirmedHpoSelection[],
   candidateGenes: GeneValidationResult[],
   inputMode: "free_text" | "hpo_codes" | "mixed",
+  build: HealthData["build"] | undefined,
 ) {
   if (!ranking) return null;
   return {
-    appVersion: "0.1.0",
+    appVersion: build?.appVersion ?? "0.1.0",
+    build,
     inputSummary: {
       inputMode,
       rawTextIncluded: false,
@@ -148,8 +151,8 @@ export function GenePrioritizerWorkflow() {
   const reportInput = useMemo(() => {
     const mode =
       freeText.trim() && hpoText.trim() ? "mixed" : freeText.trim() ? "free_text" : "hpo_codes";
-    return createReportInput(ranking, confirmedTerms, candidateResults, mode);
-  }, [candidateResults, confirmedTerms, freeText, hpoText, ranking]);
+    return createReportInput(ranking, confirmedTerms, candidateResults, mode, health?.build);
+  }, [candidateResults, confirmedTerms, freeText, health?.build, hpoText, ranking]);
 
   async function handleExtract() {
     setError(null);
@@ -174,14 +177,44 @@ export function GenePrioritizerWorkflow() {
     }
   }
 
-  function handleAddCodes(codes: string[]) {
-    setConfirmedTerms((current) =>
-      uniqueTerms([
-        ...current,
-        ...codes.map((hpoId) => ({ hpoId, label: null, source: "manual" as const })),
-      ]),
-    );
-    setMessage("HPO codes added to the confirmed ranking list.");
+  async function handleAddCodes(codes: string[]) {
+    setError(null);
+    setLoading("hpo");
+    setMessage("Validating HPO codes against the local ontology.");
+    try {
+      const lookups = await Promise.allSettled(codes.map((code) => getHpoTerm(code)));
+      const validTerms: ConfirmedHpoSelection[] = [];
+      const lookupWarnings: string[] = [];
+
+      lookups.forEach((lookup, index) => {
+        const hpoId = codes[index];
+        if (lookup.status === "fulfilled") {
+          const term = lookup.value.data;
+          validTerms.push({
+            hpoId,
+            label: term.label ?? null,
+            source: "manual",
+          });
+          if (term.isObsolete) {
+            lookupWarnings.push(
+              `${hpoId} is marked obsolete${term.replacedBy ? `; replacement: ${term.replacedBy}` : ""}.`,
+            );
+          }
+          return;
+        }
+        lookupWarnings.push(`${hpoId} was not found in the local HPO database.`);
+      });
+
+      setConfirmedTerms((current) => uniqueTerms([...current, ...validTerms]));
+      setWarnings((current) => Array.from(new Set([...current, ...lookupWarnings])));
+      setMessage(
+        validTerms.length > 0
+          ? "Validated HPO codes were added to the confirmed ranking list."
+          : "No submitted HPO codes were found in the local ontology.",
+      );
+    } finally {
+      setLoading(null);
+    }
   }
 
   function handleToggleTerm(term: ConfirmedHpoSelection, checked: boolean) {
@@ -220,9 +253,20 @@ export function GenePrioritizerWorkflow() {
     );
     try {
       const parsedGenes = parseGeneSymbols(candidateGeneText).valid;
+      let activeCandidateResults = candidateResults;
+      if (parsedGenes.length > 0) {
+        setMessage("Validating candidate genes before deterministic ranking.");
+        const validation = await validateGenes(parsedGenes);
+        activeCandidateResults = validation.data.results;
+        setCandidateResults(activeCandidateResults);
+      }
+      const excludedInvalidGenes = activeCandidateResults
+        .filter((gene) => gene.status === "INVALID")
+        .map((gene) => gene.input);
       const canonicalGenes =
-        candidateResults.length > 0
-          ? candidateResults
+        activeCandidateResults.length > 0
+          ? activeCandidateResults
+              .filter((gene) => gene.status !== "INVALID")
               .map((gene) => gene.canonicalSymbol ?? gene.normalizedInput)
               .filter((symbol): symbol is string => Boolean(symbol))
           : parsedGenes;
@@ -240,7 +284,13 @@ export function GenePrioritizerWorkflow() {
       });
       setRanking(response.data);
       setWarnings(
-        response.warnings.concat(response.data.warnings, response.data.literatureWarnings ?? []),
+        response.warnings.concat(
+          response.data.warnings,
+          response.data.literatureWarnings ?? [],
+          excludedInvalidGenes.length > 0
+            ? [`Invalid candidate genes excluded: ${excludedInvalidGenes.join(", ")}`]
+            : [],
+        ),
       );
       setMessage("Ranking complete. Review score breakdowns, evidence, and export options.");
     } catch (caught) {
@@ -270,7 +320,11 @@ export function GenePrioritizerWorkflow() {
         {activeTab === "hpo-codes" ? (
           <HpoCodeInput
             value={hpoText}
-            confirmedCodes={confirmedTerms.map((term) => term.hpoId)}
+            confirmedTerms={confirmedTerms.map((term) => ({
+              hpoId: term.hpoId,
+              label: term.label,
+            }))}
+            loading={loading === "hpo"}
             onChange={setHpoText}
             onAddCodes={handleAddCodes}
             onRemoveCode={(code) =>
