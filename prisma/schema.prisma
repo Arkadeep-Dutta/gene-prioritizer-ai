@@ -1,0 +1,317 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Local development, demo, and CI schema. Production uses the matching
+// PostgreSQL schema at prisma/postgresql/schema.prisma.
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model DataSourceVersion {
+  id           String    @id @default(cuid())
+  sourceName   String
+  sourceType   String
+  version      String
+  url          String?
+  checksum     String?
+  downloadedAt DateTime?
+  importedAt   DateTime  @default(now())
+  metadata     Json?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  phenotypeTerms   PhenotypeTerm[]
+  genes            Gene[]
+  geneAssociations GenePhenotypeAssociation[]
+
+  @@unique([sourceName, version])
+  @@index([sourceName])
+  @@index([sourceType])
+  @@index([importedAt])
+}
+
+model PhenotypeTerm {
+  id              String   @id @default(cuid())
+  hpoId           String   @unique
+  label           String
+  definition      String?
+  comment         String?
+  isObsolete      Boolean  @default(false)
+  replacedBy      String?
+  altIds          Json?
+  sourceVersionId String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  sourceVersion    DataSourceVersion?         @relation(fields: [sourceVersionId], references: [id], onDelete: SetNull)
+  synonyms         PhenotypeSynonym[]
+  parentRelations  PhenotypeRelationship[]    @relation("ParentTerm")
+  childRelations   PhenotypeRelationship[]    @relation("ChildTerm")
+  geneAssociations GenePhenotypeAssociation[]
+  literature       LiteratureEvidence[]
+
+  @@index([label])
+  @@index([isObsolete])
+  @@index([sourceVersionId])
+}
+
+model PhenotypeSynonym {
+  id          String   @id @default(cuid())
+  termId      String
+  synonym     String
+  synonymType String?
+  source      String?
+  createdAt   DateTime @default(now())
+
+  term PhenotypeTerm @relation(fields: [termId], references: [id], onDelete: Cascade)
+
+  @@unique([termId, synonym])
+  @@index([synonym])
+  @@index([termId])
+}
+
+model PhenotypeRelationship {
+  id               String   @id @default(cuid())
+  parentTermId     String
+  childTermId      String
+  relationshipType String   @default("is_a")
+  createdAt        DateTime @default(now())
+
+  parentTerm PhenotypeTerm @relation("ParentTerm", fields: [parentTermId], references: [id], onDelete: Cascade)
+  childTerm  PhenotypeTerm @relation("ChildTerm", fields: [childTermId], references: [id], onDelete: Cascade)
+
+  @@unique([parentTermId, childTermId, relationshipType])
+  @@index([parentTermId])
+  @@index([childTermId])
+}
+
+model Gene {
+  id               String   @id @default(cuid())
+  symbol           String   @unique
+  name             String?
+  hgncId           String?  @unique
+  entrezId         String?
+  ensemblId        String?
+  ncbiGeneId       String?
+  summary          String?
+  isValidated      Boolean  @default(false)
+  validationStatus String   @default("UNKNOWN")
+  sourceVersionId  String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  sourceVersion       DataSourceVersion?                @relation(fields: [sourceVersionId], references: [id], onDelete: SetNull)
+  aliases             GeneAlias[]
+  phenotypeLinks      GenePhenotypeAssociation[]
+  rankingResults      GeneRankingResult[]
+  literature          LiteratureEvidence[]
+  licensedAnnotations LicensedGeneCardsGeneAnnotation[]
+
+  @@index([entrezId])
+  @@index([ensemblId])
+  @@index([validationStatus])
+  @@index([sourceVersionId])
+}
+
+model GeneAlias {
+  id        String   @id @default(cuid())
+  geneId    String
+  alias     String
+  aliasType String?
+  source    String?
+  createdAt DateTime @default(now())
+
+  gene Gene @relation(fields: [geneId], references: [id], onDelete: Cascade)
+
+  @@unique([geneId, alias])
+  @@index([alias])
+  @@index([geneId])
+}
+
+model GenePhenotypeAssociation {
+  id              String   @id @default(cuid())
+  geneId          String
+  phenotypeTermId String
+  evidenceCode    String?
+  evidenceSource  String?
+  diseaseId       String?
+  diseaseName     String?
+  frequency       String?
+  onset           String?
+  sex             String?
+  modifier        String?
+  reference       String?
+  sourceVersionId String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  gene          Gene               @relation(fields: [geneId], references: [id], onDelete: Cascade)
+  phenotypeTerm PhenotypeTerm      @relation(fields: [phenotypeTermId], references: [id], onDelete: Cascade)
+  sourceVersion DataSourceVersion? @relation(fields: [sourceVersionId], references: [id], onDelete: SetNull)
+
+  @@unique([geneId, phenotypeTermId, diseaseId, evidenceSource])
+  @@index([geneId])
+  @@index([phenotypeTermId])
+  @@index([diseaseId])
+  @@index([evidenceSource])
+  @@index([sourceVersionId])
+}
+
+model UserCase {
+  id                    String   @id @default(cuid())
+  inputHash             String   @unique
+  inputType             String
+  consentToStoreRawText Boolean  @default(false)
+  rawTextRedacted       String?
+  rawTextStored         Boolean  @default(false)
+  hpoTermsJson          Json
+  candidateGenesJson    Json?
+  metadataJson          Json?
+  privacyMode           Boolean  @default(true)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  rankingResults GeneRankingResult[]
+
+  @@index([inputType])
+  @@index([createdAt])
+}
+
+model GeneRankingResult {
+  id                String   @id @default(cuid())
+  userCaseId        String
+  geneId            String
+  rank              Int
+  score             Float
+  scoreBreakdown    Json
+  matchedPhenotypes Json
+  evidenceJson      Json?
+  warningsJson      Json?
+  rankingMode       String
+  algorithmVersion  String
+  createdAt         DateTime @default(now())
+
+  userCase   UserCase             @relation(fields: [userCaseId], references: [id], onDelete: Cascade)
+  gene       Gene                 @relation(fields: [geneId], references: [id], onDelete: Cascade)
+  literature LiteratureEvidence[]
+
+  @@unique([userCaseId, geneId, algorithmVersion])
+  @@index([userCaseId])
+  @@index([geneId])
+  @@index([rank])
+  @@index([score])
+  @@index([algorithmVersion])
+}
+
+model LiteratureRecord {
+  id              String    @id @default(cuid())
+  pmid            String?   @unique
+  doi             String?
+  title           String
+  abstract        String?
+  journal         String?
+  publicationYear Int?
+  authorsJson     Json?
+  url             String?
+  sourceName      String    @default("PubMed")
+  fetchedAt       DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  evidence LiteratureEvidence[]
+
+  @@index([doi])
+  @@index([publicationYear])
+  @@index([title])
+}
+
+model LiteratureEvidence {
+  id                 String   @id @default(cuid())
+  literatureRecordId String
+  geneId             String?
+  phenotypeTermId    String?
+  rankingResultId    String?
+  evidenceType       String?
+  summary            String?
+  quote              String?
+  sourceQuery        String?
+  createdAt          DateTime @default(now())
+
+  literatureRecord LiteratureRecord   @relation(fields: [literatureRecordId], references: [id], onDelete: Cascade)
+  gene             Gene?              @relation(fields: [geneId], references: [id], onDelete: SetNull)
+  phenotypeTerm    PhenotypeTerm?     @relation(fields: [phenotypeTermId], references: [id], onDelete: SetNull)
+  rankingResult    GeneRankingResult? @relation(fields: [rankingResultId], references: [id], onDelete: SetNull)
+
+  @@index([literatureRecordId])
+  @@index([geneId])
+  @@index([phenotypeTermId])
+  @@index([rankingResultId])
+}
+
+model AuditEvent {
+  id        String   @id @default(cuid())
+  eventType String
+  actorType String?
+  actorHash String?
+  ipHash    String?
+  userAgent String?
+  requestId String?
+  metadata  Json?
+  createdAt DateTime @default(now())
+
+  @@index([eventType])
+  @@index([actorType])
+  @@index([requestId])
+  @@index([createdAt])
+}
+
+model RateLimitEvent {
+  id          String   @id @default(cuid())
+  keyHash     String
+  endpoint    String
+  count       Int      @default(1)
+  windowStart DateTime
+  windowEnd   DateTime
+  createdAt   DateTime @default(now())
+
+  @@unique([keyHash, endpoint, windowStart])
+  @@index([keyHash])
+  @@index([endpoint])
+  @@index([windowStart])
+  @@index([windowEnd])
+}
+
+model LicensedGeneCardsImport {
+  id               String   @id @default(cuid())
+  uploadedByHash   String?
+  originalFilename String
+  fileHash         String
+  licenseConfirmed Boolean
+  importedAt       DateTime @default(now())
+  rowCount         Int
+  metadata         Json?
+  createdAt        DateTime @default(now())
+
+  annotations LicensedGeneCardsGeneAnnotation[]
+
+  @@index([fileHash])
+  @@index([importedAt])
+}
+
+model LicensedGeneCardsGeneAnnotation {
+  id         String   @id @default(cuid())
+  importId   String
+  geneId     String?
+  symbol     String
+  fieldsJson Json
+  createdAt  DateTime @default(now())
+
+  import LicensedGeneCardsImport @relation(fields: [importId], references: [id], onDelete: Cascade)
+  gene   Gene?                   @relation(fields: [geneId], references: [id], onDelete: SetNull)
+
+  @@index([importId])
+  @@index([geneId])
+  @@index([symbol])
+}

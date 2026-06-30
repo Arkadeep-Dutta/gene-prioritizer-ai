@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PubmedArticleSet>
+  <PubmedArticle>
+    <MedlineCitation>
+      <PMID>12345678</PMID>
+      <Article>
+        <Journal>
+          <Title>Example Journal of Human Genetics</Title>
+          <JournalIssue><PubDate><Year>2021</Year></PubDate></JournalIssue>
+        </Journal>
+        <ArticleTitle>SCN2A variation and seizure phenotypes in neurodevelopmental disease.</ArticleTitle>
+        <Abstract>
+          <AbstractText>This fixture abstract describes SCN2A and seizure phenotypes using metadata returned by NCBI fixtures only.</AbstractText>
+        </Abstract>
+        <AuthorList>
+          <Author><ForeName>Avery</ForeName><LastName>Nguyen</LastName></Author>
+          <Author><ForeName>Rina</ForeName><LastName>Patel</LastName></Author>
+        </AuthorList>
+      </Article>
+    </MedlineCitation>
+    <PubmedData>
+      <ArticleIdList>
+        <ArticleId IdType="pubmed">12345678</ArticleId>
+        <ArticleId IdType="doi">10.1000/example-scn2a</ArticleId>
+      </ArticleIdList>
+    </PubmedData>
+  </PubmedArticle>
+</PubmedArticleSet>

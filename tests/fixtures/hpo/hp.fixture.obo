@@ -1,0 +1,43 @@
+format-version: 1.2
+data-version: hp/releases/2026-06-06
+
+[Term]
+id: HP:0000001
+name: All
+def: "Root of the Human Phenotype Ontology." [HPO:probinson]
+
+[Term]
+id: HP:0012638
+name: Abnormal nervous system physiology
+def: "A functional anomaly of the nervous system." [HPO:probinson]
+is_a: HP:0000001 ! All
+
+[Term]
+id: HP:0001250
+name: Seizure
+def: "A seizure is an intermittent abnormality of nervous system physiology." [HPO:probinson]
+synonym: "Seizures" EXACT []
+synonym: "Epileptic seizure" RELATED []
+alt_id: HP:9999999
+is_a: HP:0012638 ! Abnormal nervous system physiology
+
+[Term]
+id: HP:0001263
+name: Global developmental delay
+def: "A delay in the achievement of motor or mental milestones." [HPO:probinson]
+synonym: "Developmental delay" RELATED []
+is_a: HP:0012638 ! Abnormal nervous system physiology
+
+[Term]
+id: HP:0001252
+name: Hypotonia
+def: "Reduced muscle tone." [HPO:probinson]
+synonym: "Low muscle tone" EXACT []
+is_a: HP:0012638 ! Abnormal nervous system physiology
+
+[Term]
+id: HP:0009999
+name: Old seizure label
+is_obsolete: true
+replaced_by: HP:0001250
+comment: This fixture term exercises obsolete HPO handling.

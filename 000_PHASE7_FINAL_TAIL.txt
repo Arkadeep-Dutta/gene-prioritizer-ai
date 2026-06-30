@@ -1,0 +1,60 @@
+ [32m✓[39m tests/genes/normalize.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m tests/phenotype/metadata.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m tests/hpo/validate.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m tests/llm/json.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m tests/ranking/scoring.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m tests/literature/summarize.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m tests/literature/cache.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m49 passed[39m[22m[90m (49)[39m
+[2m      Tests [22m [1m[32m158 passed[39m[22m[90m (158)[39m
+[2m   Start at [22m 20:04:35
+[2m   Duration [22m 48.74s[2m (transform 793ms, setup 3.05s, import 3.26s, tests 3.05s, environment 28.47s)[22m
+
+
+> gene-prioritizer-ai@0.1.0 build
+> next build
+
+   ▲ Next.js 15.5.19
+   - Environments: .env
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 10.8s
+   Linting and checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/4) ...
+   Generating static pages (1/4) 
+   Generating static pages (2/4) 
+   Generating static pages (3/4) 
+ ✓ Generating static pages (4/4)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                 Size  First Load JS
+┌ ○ /                                      148 B         103 kB
+├ ○ /_not-found                            993 B         103 kB
+├ ƒ /api/data/version                      148 B         103 kB
+├ ƒ /api/genes/[symbol]                    148 B         103 kB
+├ ƒ /api/genes/validate                    148 B         103 kB
+├ ƒ /api/health                            148 B         103 kB
+├ ƒ /api/hpo/search                        148 B         103 kB
+├ ƒ /api/hpo/term/[id]                     148 B         103 kB
+├ ƒ /api/literature/search                 148 B         103 kB
+├ ƒ /api/phenotype/extract                 148 B         103 kB
+└ ƒ /api/prioritize                        148 B         103 kB
++ First Load JS shared by all             102 kB
+  ├ chunks/255-98a0bdaa30757bda.js       46.2 kB
+  ├ chunks/4bd1b696-c023c6e3521b1417.js  54.2 kB
+  └ other shared chunks (total)           1.9 kB
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
+
+> gene-prioritizer-ai@0.1.0 format:check
+> prettier --check .
+
+Checking formatting...
+All matched files use Prettier code style!
+found 0 vulnerabilities

@@ -1,0 +1,25 @@
+{
+  "header": { "type": "esummary", "version": "0.3" },
+  "result": {
+    "uids": ["12345678", "23456789"],
+    "12345678": {
+      "uid": "12345678",
+      "title": "SCN2A variation and seizure phenotypes in neurodevelopmental disease.",
+      "fulljournalname": "Example Journal of Human Genetics",
+      "pubdate": "2021 Jan",
+      "authors": [{ "name": "Nguyen A" }, { "name": "Patel R" }],
+      "articleids": [
+        { "idtype": "pubmed", "value": "12345678" },
+        { "idtype": "doi", "value": "10.1000/example-scn2a" }
+      ]
+    },
+    "23456789": {
+      "uid": "23456789",
+      "title": "Voltage-gated sodium channel genes in developmental delay.",
+      "source": "Example Neurology",
+      "pubdate": "2019",
+      "authors": [{ "name": "Smith J" }],
+      "articleids": [{ "idtype": "pubmed", "value": "23456789" }]
+    }
+  }
+}

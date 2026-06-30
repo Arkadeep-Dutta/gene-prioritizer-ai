@@ -1,0 +1,5 @@
+#disease_id	disease_name	gene_symbol	gene_id	hpo_id	hpo_name	evidence	reference	frequency	onset	sex	modifier
+OMIM:613721	Developmental and epileptic encephalopathy	SCN2A	6326	HP:0001250	Seizure	PCS	PMID:00000001	Frequent	Infantile		Severe
+OMIM:613721	Developmental and epileptic encephalopathy	SCN2A	6326	HP:0001263	Global developmental delay	PCS	PMID:00000002				
+OMIM:613721	Developmental and epileptic encephalopathy	SCN2A	6326	HP:0001250	Seizure	PCS	PMID:00000001	Frequent	Infantile		Severe
+OMIM:121200	Benign familial neonatal seizures	KCNQ2	3785	HP:0001250	Seizure	PCS	PMID:00000003				

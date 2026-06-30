@@ -1,0 +1,65 @@
+{
+  "name": "gene-prioritizer-ai",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Research-use foundation for an AI-assisted phenotype-to-gene prioritization application.",
+  "engines": {
+    "node": ">=20.9.0"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint . --max-warnings=0",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:e2e": "tsx scripts/e2e-smoke.ts",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "db:generate": "prisma generate",
+    "db:generate:postgres": "prisma generate --config prisma/postgresql/prisma.config.ts",
+    "db:migrate": "prisma migrate dev",
+    "db:migrate:deploy": "prisma migrate deploy",
+    "db:migrate:postgres": "prisma migrate deploy --config prisma/postgresql/prisma.config.ts",
+    "db:studio": "prisma studio",
+    "data:download-hpo": "tsx scripts/download-hpo.ts",
+    "data:build-hpo": "tsx scripts/build-hpo.ts",
+    "data:update": "tsx scripts/update-hpo.ts",
+    "data:seed": "tsx prisma/seed.ts",
+    "setup": "npm run db:generate && npm run db:migrate && npm run data:seed"
+  },
+  "dependencies": {
+    "@prisma/client": "6.19.3",
+    "dotenv": "^16.6.1",
+    "next": "15.5.19",
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.3.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.0",
+    "@types/node": "^22.19.0",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
+    "@vitejs/plugin-react": "^5.1.0",
+    "autoprefixer": "^10.4.21",
+    "eslint": "^9.39.1",
+    "eslint-config-next": "15.5.19",
+    "eslint-config-prettier": "^10.1.8",
+    "jsdom": "^27.1.0",
+    "postcss": "^8.5.6",
+    "prettier": "^3.6.2",
+    "prisma": "6.19.3",
+    "tailwindcss": "^3.4.18",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.8"
+  },
+  "overrides": {
+    "next": {
+      "postcss": "8.5.10"
+    }
+  }
+}

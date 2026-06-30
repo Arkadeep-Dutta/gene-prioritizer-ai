@@ -1,0 +1,1 @@
+Phase 8 safety/vitest fix applied at 2026-06-25T00:28:29+00:00

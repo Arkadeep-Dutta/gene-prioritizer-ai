@@ -1,0 +1,5 @@
+HOME 200
+LITERATURE 200
+PRIORITIZE 200
+LITERATURE_BODY {"ok":true,"data":{"queries":[{"geneSymbol":"SCN2A","hpoTerms":["HP:0001250"],"query":"\"SCN2A\"[Title/Abstract] AND (\"Seizure\"[Title/Abstract])","queryType":"gene_phenotype","pmids":["42325954"]},{"geneSymbol":"SCN2A"
+PRIORITIZE_BODY {"ok":true,"data":{"inputHash":"867fbd357be36ace5c5d3c7b596c19f40ab71762cda9b8c71314851ac225b312","algorithmVersion":"deterministic-hpo-v1","rankingMode":"ALL_GENES","confirmedHpoTerms":[{"hpoId":"HP:0001250","label":"Se

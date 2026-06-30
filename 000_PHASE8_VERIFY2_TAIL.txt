@@ -1,0 +1,120 @@
+ [32m✓[39m tests/api/hpo-search.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 20[2mms[22m[39m
+ [32m✓[39m tests/phenotype/uncertainty.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 20[2mms[22m[39m
+ [32m✓[39m tests/api/hpo-term.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+ [32m✓[39m tests/phenotype/family-history.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+ [32m✓[39m tests/api/data-version.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+ [32m✓[39m tests/phenotype/deterministic-matcher.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+ [32m✓[39m tests/ranking/match-phenotypes.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 23[2mms[22m[39m
+ [32m✓[39m tests/ranking/input.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+ [32m✓[39m tests/api/gene-detail.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 20[2mms[22m[39m
+ [32m✓[39m tests/literature/ncbi-client.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+ [32m✓[39m tests/api/health.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 17[2mms[22m[39m
+ [32m✓[39m tests/phenotype/map-to-hpo.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 16[2mms[22m[39m
+ [32m✓[39m tests/genes/hgnc-client.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+ [32m✓[39m tests/hpo/validate.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m tests/client/api.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m tests/literature/pubmed-parser.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m tests/phenotype/input.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m tests/hpo/parse-phenotype-to-genes.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+ [32m✓[39m tests/llm/schema.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m tests/hpo/parse-obo.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m tests/literature/query-builder.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m tests/hpo/parse-genes-to-phenotype.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m tests/llm/provider.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m tests/genes/linkouts.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m tests/phenotype/metadata.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m tests/genes/normalize.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m tests/ranking/input-hash.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m tests/ranking/scoring.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m tests/llm/json.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m tests/export/reports.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m tests/literature/cache.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m tests/literature/summarize.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m54 passed[39m[22m[90m (54)[39m
+[2m      Tests [22m [1m[32m183 passed[39m[22m[90m (183)[39m
+[2m   Start at [22m 00:28:39
+[2m   Duration [22m 49.00s[2m (transform 940ms, setup 2.91s, import 3.48s, tests 3.47s, environment 28.10s)[22m
+
+
+> gene-prioritizer-ai@0.1.0 build
+> next build
+
+   ▲ Next.js 15.5.19
+   - Environments: .env
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 10.4s
+   Linting and checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/10) ...
+   Generating static pages (2/10) 
+   Generating static pages (4/10) 
+   Generating static pages (7/10) 
+ ✓ Generating static pages (10/10)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                 Size  First Load JS
+┌ ○ /                                    9.84 kB         112 kB
+├ ○ /_not-found                            993 B         103 kB
+├ ○ /about                                 159 B         103 kB
+├ ƒ /api/data/version                      159 B         103 kB
+├ ƒ /api/genes/[symbol]                    159 B         103 kB
+├ ƒ /api/genes/validate                    159 B         103 kB
+├ ƒ /api/health                            159 B         103 kB
+├ ƒ /api/hpo/search                        159 B         103 kB
+├ ƒ /api/hpo/term/[id]                     159 B         103 kB
+├ ƒ /api/literature/search                 159 B         103 kB
+├ ƒ /api/phenotype/extract                 159 B         103 kB
+├ ƒ /api/prioritize                        159 B         103 kB
+├ ○ /data-sources                          159 B         103 kB
+├ ○ /disclaimer                            159 B         103 kB
+├ ○ /methodology                           159 B         103 kB
+├ ○ /privacy                               159 B         103 kB
+└ ○ /security                              159 B         103 kB
++ First Load JS shared by all             102 kB
+  ├ chunks/255-98a0bdaa30757bda.js       46.2 kB
+  ├ chunks/4bd1b696-c023c6e3521b1417.js  54.2 kB
+  └ other shared chunks (total)           1.9 kB
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
+
+> gene-prioritizer-ai@0.1.0 format:check
+> prettier --check .
+
+Checking formatting...
+All matched files use Prettier code style!
+found 0 vulnerabilities
+
+> gene-prioritizer-ai@0.1.0 test:e2e
+> tsx scripts/e2e-smoke.ts
+
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+Error: Transform failed with 9 errors:
+/workspaces/gene-prioritizer-ai/scripts/e2e-smoke.ts:79:2: ERROR: Top-level await is currently not supported with the "cjs" output format
+/workspaces/gene-prioritizer-ai/scripts/e2e-smoke.ts:80:2: ERROR: Top-level await is currently not supported with the "cjs" output format
+/workspaces/gene-prioritizer-ai/scripts/e2e-smoke.ts:81:2: ERROR: Top-level await is currently not supported with the "cjs" output format
+/workspaces/gene-prioritizer-ai/scripts/e2e-smoke.ts:82:2: ERROR: Top-level await is currently not supported with the "cjs" output format
+/workspaces/gene-prioritizer-ai/scripts/e2e-smoke.ts:83:2: ERROR: Top-level await is currently not supported with the "cjs" output format
+...
+    at failureErrorWithLog (/workspaces/gene-prioritizer-ai/node_modules/esbuild/lib/main.js:1748:15)
+    at /workspaces/gene-prioritizer-ai/node_modules/esbuild/lib/main.js:1017:50
+    at responseCallbacks.<computed> (/workspaces/gene-prioritizer-ai/node_modules/esbuild/lib/main.js:884:9)
+    at handleIncomingPacket (/workspaces/gene-prioritizer-ai/node_modules/esbuild/lib/main.js:939:12)
+    at Socket.readFromStdout (/workspaces/gene-prioritizer-ai/node_modules/esbuild/lib/main.js:862:7)
+    at Socket.emit (node:events:508:28)
+    at addChunk (node:internal/streams/readable:563:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:514:3)
+    at Readable.push (node:internal/streams/readable:394:5)
+    at Pipe.onStreamRead (node:internal/stream_base_commons:189:23) {
+  name: 'TransformError'
+}
+
+Node.js v24.14.0

@@ -1,0 +1,80 @@
+            [36m</span>[39m
+            [0m [0m
+            [0mReview results[0m
+          [36m</li>[39m
+          [36m<li[39m
+            [33mclass[39m=[32m"rounded-2xl border border-slate-200 bg-white p-3 shadow-sm"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"text-cyan-700"[39m
+            [36m>[39m
+              [0m7[0m
+              [0m.[0m
+            [36m</span>[39m
+            [0m [0m
+            [0mExport[0m
+          [36m</li>[39m
+        [36m</ol>[39m
+      [36m</section>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"space-y-8"[39m
+      [36m>[39m
+        [36m<section[39m
+          [33mclass[39m=[32m"rounded-2xl border border-slate-200 bg-white p-5 shadow-sm space-y-5"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33maria-label[39m=[32m"Workflow input sections"[39m
+            [33mclass[39m=[32m"flex flex-wrap gap-2"[39m
+            [33mrole[39m=[32m"tablist"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33maria-controls[39m=[32m"free-text-panel"[39m
+              [33maria-selected[39m=[32m"true"[39m
+              [33mclass[39m=[32m"rounded-full border px-4 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-cyan-500 border-cyan-700 bg-cyan-700 text-white"[39m
+              [33mrole[39m=[32m"tab"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mFree Text[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33maria-controls[39m=[32m"hpo-codes-panel"[39m
+              [33maria-selected[39m=[32m"false"[39m
+              [33mclass[39m=[32m"rounded-full border px-4 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-cyan-500 border-slate-300 bg-white text-slate-700 hover:border-cyan-500"[39m
+              [33mrole[39m=[32m"tab"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mHPO Codes[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33maria-controls[39m=[32m"candidate-genes-panel"[39m
+              [33maria-selected[39m=[32m"false"[39m
+              [33mclass[39m=[32m"rounded-full border px-4 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-cyan-500 border-slate-300 bg-white text-slate-700 hover:border-cyan-500"[39m
+              [33mrole[39m=[32m"tab"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mCandidate Genes[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33maria-controls[39m=[32m"advanced-options-panel"[39m
+              [33maria-selected[39m=[32m"false"[39m
+              [33mclass[39m=[32m"rounded-full border px-4 py-2 text-sm font-medium focu...
+[90m [2m❯[22m Object.getElementError node_modules/@testing-library/dom/dist/config.js:[2m37:19[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m76:38[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m52:17[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m95:19[22m[39m
+[36m [2m❯[22m lib/safety.test.tsx:[2m15:19[22m[39m
+    [90m 13|[39m   [34mit[39m([32m"renders the disclaimer on the landing page"[39m[33m,[39m () [33m=>[39m {
+    [90m 14|[39m     [34mrender[39m([33m<[39m[33mHome[39m [33m/[39m[33m>[39m)[33m;[39m
+    [90m 15|[39m     expect(screen.getByRole("heading", { name: "Research use only" }))…
+    [90m   |[39m                   [31m^[39m
+    [90m 16|[39m     [34mexpect[39m(screen[33m.[39m[34mgetByText[39m([33mRESEARCH_DISCLAIMER[39m))[33m.[39m[34mtoBeVisible[39m()[33m;[39m
+    [90m 17|[39m   })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m53 passed[39m[22m[90m (54)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m182 passed[39m[22m[90m (183)[39m
+[2m   Start at [22m 00:24:05
+[2m   Duration [22m 51.57s[2m (transform 1.09s, setup 3.11s, import 3.85s, tests 4.10s, environment 29.27s)[22m
+
