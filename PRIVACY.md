@@ -64,3 +64,57 @@ information unless the app is deployed in a compliant environment.
 
 JSON, CSV, and Markdown exports exclude raw clinical text by default and include a research-use
 disclaimer. If future phases add optional raw-text export, it must require explicit user opt-in.
+
+## Phase 9 logging, admin, and rate-limit privacy
+
+Phase 9 keeps privacy-first defaults:
+
+- `LOG_RAW_INPUTS=false`
+- `LOG_REQUEST_BODIES=false`
+- `PRIVACY_MODE_DEFAULT=true`
+- `AUDIT_ADMIN_ACTIONS=true`
+
+Audit logs are for security-sensitive admin activity. They store event type, actor type, hashed
+actor/network identifiers, sanitized user agent, request ID, timestamp, and redacted metadata. They
+must not store admin secrets, API keys, database URLs, Authorization headers, cookies, raw phenotype
+text, raw request bodies, or clinical notes.
+
+Third-party service boundaries:
+
+- HGNC receives gene symbols only when server-side validation is requested and a live lookup is
+  needed.
+- NCBI PubMed receives gene symbols and confirmed HPO IDs/labels only when literature search is
+  enabled/requested.
+- External LLM providers receive text only if both the server environment and request explicitly
+  enable that path; it remains disabled by default.
+
+The app is not HIPAA-compliant by default. Operators are responsible for access controls, retention,
+deletion, backups, incident response, vendor review, and compliance work before any real patient or
+identifiable data is used.
+
+## Phase 10 licensed GeneCards import privacy
+
+Licensed GeneCards/GeneALaCart imports should contain gene annotation export data only, not patient
+data, clinical narratives, identifiers, or free text. The parser excludes and warns on
+patient-identifying column names such as patient, name, DOB/date of birth, MRN, email, phone, and
+address.
+
+The upload workflow stores import metadata, row counts, hashes, parser warnings, and annotation
+field JSON in licensed tables. It does not store admin secrets, raw request bodies in audit logs,
+raw uploaded file text in audit logs, or raw uploader IPs. Audit actor/network identifiers are
+hashed through the existing redaction helpers.
+
+Operators are responsible for license scope, retention, deletion, database backups, and access
+controls for licensed imported data. Do not commit real GeneCards exports or patient-containing
+files to source control.
+
+## Phase 11 deployment privacy
+
+Deployment operators are responsible for hosting-provider review, database backup retention,
+access controls, log retention, incident response, and deletion workflows. Keep
+`LOG_RAW_INPUTS=false` and `LOG_REQUEST_BODIES=false`; deployment checks warn if either is enabled
+in production.
+
+Docker and CI ignore local `.env` files, SQLite databases, logs, and raw HPO caches. Smoke tests
+check API responses for secret-like text. Public health and data-version endpoints expose safe
+booleans/counts/metadata only, not credentials, raw clinical text, or request bodies.

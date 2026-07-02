@@ -10,10 +10,15 @@ import { prisma } from "@/lib/db/prisma";
 describe("gene validation security and privacy", () => {
   it("does not include GeneCards scrape/fetch logic in linkout helpers", async () => {
     const linkouts = await readFile(resolve(process.cwd(), "lib/genes/linkouts.ts"), "utf8");
+    const geneCardsLinkout = await readFile(
+      resolve(process.cwd(), "lib/genecards/linkout.ts"),
+      "utf8",
+    );
+    const combined = `${linkouts}\n${geneCardsLinkout}`;
 
-    expect(linkouts).toContain("genecards.org");
-    expect(linkouts).not.toMatch(/fetch\s*\(/);
-    expect(linkouts).not.toMatch(/scrap/i);
+    expect(combined).toContain("genecards.org");
+    expect(combined).not.toMatch(/fetch\s*\(/);
+    expect(combined).not.toMatch(/scrap/i);
   });
 
   it("does not import GeneCards data in fixtures", async () => {

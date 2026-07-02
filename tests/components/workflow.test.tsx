@@ -51,7 +51,7 @@ describe("workflow UI components", () => {
     render(
       <HpoCodeInput
         value="HP:0001250, HP:0001263"
-        confirmedCodes={[]}
+        confirmedTerms={[]}
         onChange={vi.fn()}
         onAddCodes={onAddCodes}
         onRemoveCode={vi.fn()}
@@ -60,6 +60,20 @@ describe("workflow UI components", () => {
 
     fireEvent.click(screen.getByRole("button", { name: /add valid hpo codes/i }));
     expect(onAddCodes).toHaveBeenCalledWith(["HP:0001250", "HP:0001263"]);
+  });
+
+  it("renders validated HPO labels in the direct code list", () => {
+    render(
+      <HpoCodeInput
+        value=""
+        confirmedTerms={[{ hpoId: "HP:0001250", label: "Seizure" }]}
+        onChange={vi.fn()}
+        onAddCodes={vi.fn()}
+        onRemoveCode={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByText(/HP:0001250 - Seizure/i)).toBeInTheDocument();
   });
 
   it("parses and deduplicates candidate gene symbols", () => {

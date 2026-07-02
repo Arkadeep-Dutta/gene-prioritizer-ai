@@ -1,0 +1,4 @@
+Gene Symbol,Synthetic Relevance,Synthetic Note,patient_name
+SCN2A,"alpha, beta",=cmd|' /C calc'!A0,
+KCNQ2,Medium,Synthetic licensed annotation,
+SCN2A,Duplicate symbol row,Synthetic duplicate row,

@@ -15,6 +15,7 @@ const databaseEnvironmentSchema = z.object({
   NCBI_API_KEY: optionalString,
   NCBI_EMAIL: optionalString,
   REDIS_URL: optionalString,
+  NEXT_PHASE: optionalString,
 });
 
 export type DatabaseEnvironment = z.infer<typeof databaseEnvironmentSchema> & {
@@ -27,7 +28,9 @@ export function readDatabaseEnvironment(
   const parsed = databaseEnvironmentSchema.parse(environment);
   const databaseUrl = parsed.DATABASE_URL?.trim();
 
-  if (!databaseUrl && parsed.NODE_ENV === "production") {
+  const isNextProductionBuild = parsed.NEXT_PHASE === "phase-production-build";
+
+  if (!databaseUrl && parsed.NODE_ENV === "production" && !isNextProductionBuild) {
     throw new Error("DATABASE_URL must be configured in production.");
   }
 

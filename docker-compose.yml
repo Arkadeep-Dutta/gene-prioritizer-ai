@@ -1,9 +1,50 @@
 services:
-  web:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: gene_prio
+      POSTGRES_PASSWORD: gene_prio_local_change_me
+      POSTGRES_DB: gene_prio
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gene_prio -d gene_prio"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  app:
     build:
       context: .
+    env_file:
+      - path: .env.docker
+        required: false
     ports:
       - "3000:3000"
     environment:
       NODE_ENV: production
+      APP_ENV: production
+      DEPLOYMENT_TARGET: docker
+      PORT: 3000
+      HOSTNAME: 0.0.0.0
+      DATABASE_URL: postgresql://gene_prio:gene_prio_local_change_me@postgres:5432/gene_prio?schema=public
+      DIRECT_URL: postgresql://gene_prio:gene_prio_local_change_me@postgres:5432/gene_prio?schema=public
+      GENE_CARDS_LICENSED_IMPORT_ENABLED: "false"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          'node -e "fetch(''http://127.0.0.1:3000/api/health'').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"',
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
     restart: unless-stopped
+
+volumes:
+  postgres-data:

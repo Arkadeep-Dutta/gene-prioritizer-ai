@@ -82,3 +82,78 @@ Do not use real patient data in security reports, demonstrations, tests, or logs
 - JSON, CSV, and Markdown exports exclude raw free text by default.
 - External links use user-clicked linkouts with safe browser attributes when leaving the app.
 - The UI displays safety disclaimers and avoids diagnosis claims.
+
+## Phase 9 production hardening
+
+Threat model: this remains a public research/education prototype. Controls focus on avoiding secret
+leakage, raw clinical-text persistence/logging, uncontrolled expensive requests, unsafe admin
+operations, stack traces in API responses, and misleading medical certainty.
+
+Implemented controls:
+
+- `middleware.ts` applies centralized security headers and CSP.
+- CSP blocks object/frame embedding, restricts form actions, sets `frame-ancestors 'none'`, and
+  allows only the app, local development connections, NCBI E-utilities, and HGNC as needed.
+- HSTS is emitted only when `APP_ENV=production`.
+- Expensive endpoints use request body size checks and an in-memory rate limiter:
+  `/api/prioritize`, `/api/phenotype/extract`, `/api/literature/search`,
+  `/api/genes/validate`, and admin routes.
+- Admin routes require `Authorization: Bearer <ADMIN_INGEST_SECRET>` or `x-admin-secret`, compare
+  secrets in constant time, and fail closed in production if the placeholder secret is still used.
+- `GET /api/admin/status` returns safe counts/configuration booleans only.
+- `POST /api/admin/data/update` is protected and audit-logged but does not execute shell commands,
+  accept file paths, or run arbitrary imports from a request.
+- `AuditEvent` records admin attempts using hashed IPs/actors, sanitized user agents, request IDs,
+  and redacted metadata.
+- Redaction helpers remove secret-like keys and omit raw clinical text from safe log metadata.
+- `/robots.txt` disallows `/api/` and `/admin/`; `/admin/data` is noindex.
+- API errors use safe envelopes and do not include stack traces, database URLs, API keys, admin
+  secrets, or raw external errors.
+
+Known limitations:
+
+- The memory rate limiter is per-process and not sufficient for multi-instance/serverless
+  production. Use Redis/Upstash or another shared backend before relying on rate limits at scale.
+- There is no user account system, role-based access control, HIPAA program, SIEM integration, or
+  production monitoring vendor in this phase.
+- Admin data update remains a manual CLI workflow by design.
+
+Run security-related checks with:
+
+```bash
+npm test -- tests/security
+npm test -- tests/api/admin-status.test.ts tests/api/admin-data-update.test.ts tests/api/rate-limit.test.ts
+```
+
+## Phase 10 licensed GeneCards import security
+
+`POST /api/import/genecards` is admin-only, rate-limited, disabled by default, and requires explicit
+license confirmation. It accepts only uploaded CSV/TSV file bodies; it does not accept remote URLs,
+file paths, shell commands, GeneCards HTML, or automated website queries.
+
+Upload protections include extension checks, byte and row caps, text/binary rejection, required
+symbol headers, formula-like value escaping, patient-identifying column warnings/exclusion, safe
+JSON envelopes, and duplicate file-hash rejection. Raw upload content is not written to audit logs.
+
+Admin list/detail endpoints expose safe metadata and field names/samples only; they do not expose
+admin secrets, raw file content, stack traces, or uploader hashes. Imported annotations remain in
+separate licensed tables and are labeled as user-provided licensed data, not diagnostic evidence.
+
+Security tests assert that GeneCards linkouts remain pure string generation with no network calls
+and that import/linkout code contains no GeneCards fetching, crawling, scraping, browser automation,
+or HTML parsing path.
+
+## Phase 11 deployment security
+
+Production deployments must not use `ADMIN_INGEST_SECRET="change-me-in-production"`.
+`npm run deploy:check` reports unsafe production config without printing secret values. Public
+`/api/health` exposes only build metadata and warning counts; detailed deployment warnings are
+available only through the admin status endpoint.
+
+Docker images are built with `npm ci`, do not copy `.env`, run as a non-root `nextjs` user, and
+include a healthcheck. `.dockerignore` excludes local secrets, SQLite files, logs, raw HPO caches,
+coverage, and build artifacts.
+
+Use a shared rate-limit backend before relying on rate limits across multi-instance production.
+Keep CSP/security headers enabled, rotate admin secrets through the hosting provider secret store,
+and verify `curl -I /` plus `npm run smoke:api` after deployment.

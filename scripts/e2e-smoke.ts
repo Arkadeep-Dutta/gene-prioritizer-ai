@@ -55,12 +55,12 @@ async function expectPrioritize() {
 }
 
 function startServer(): ChildProcess {
-  const command = process.platform === "win32" ? "npm.cmd" : "npm";
+  const env = { ...process.env, DATABASE_URL: process.env.DATABASE_URL ?? "file:./dev.db" };
   const child = spawn(
-    command,
-    ["run", "dev", "--", "--hostname", "127.0.0.1", "--port", String(port)],
+    process.execPath,
+    ["node_modules/next/dist/bin/next", "dev", "--hostname", "127.0.0.1", "--port", String(port)],
     {
-      env: { ...process.env, DATABASE_URL: process.env.DATABASE_URL ?? "file:./dev.db" },
+      env,
       stdio: "inherit",
     },
   );
@@ -74,18 +74,25 @@ function startServer(): ChildProcess {
 
 let server: ChildProcess | undefined;
 
-try {
-  if (shouldStartServer) server = startServer();
-  await waitForServer(`${baseUrl}/`);
-  await expectPage("/", "Research and educational use only");
-  await expectPage("/about", "About Gene Prioritizer AI");
-  await expectPage("/methodology", "Methodology");
-  await expectPage("/data-sources", "Data sources");
-  await expectPage("/disclaimer", "Disclaimer");
-  await expectPage("/privacy", "Privacy");
-  await expectPage("/security", "Security");
-  await expectPrioritize();
-  console.log("Phase 8 E2E smoke passed.");
-} finally {
-  if (server) server.kill();
+async function main() {
+  try {
+    if (shouldStartServer) server = startServer();
+    await waitForServer(`${baseUrl}/`);
+    await expectPage("/", "Research and educational use only");
+    await expectPage("/about", "About Gene Prioritizer AI");
+    await expectPage("/methodology", "Methodology");
+    await expectPage("/data-sources", "Data sources");
+    await expectPage("/disclaimer", "Disclaimer");
+    await expectPage("/privacy", "Privacy");
+    await expectPage("/security", "Security");
+    await expectPrioritize();
+    console.log("Phase 8 E2E smoke passed.");
+  } finally {
+    if (server) server.kill();
+  }
 }
+
+main().catch((error: unknown) => {
+  console.error(error instanceof Error ? error.message : String(error));
+  process.exitCode = 1;
+});

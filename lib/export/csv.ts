@@ -20,6 +20,8 @@ const columns = [
   "matchedHpoLabels",
   "warnings",
   "topPubMedPmids",
+  "hasLicensedGeneCardsAnnotations",
+  "licensedGeneCardsAnnotationCount",
 ] as const;
 
 function csvCell(value: unknown): string {
@@ -51,6 +53,8 @@ function rowForResult(result: PublicRankedGene): string[] {
     matchedHpoLabels,
     result.warnings,
     pmids,
+    Boolean(result.gene.licensedGeneCardsAnnotations?.length),
+    result.gene.licensedGeneCardsAnnotations?.length ?? 0,
   ].map(csvCell);
 }
 

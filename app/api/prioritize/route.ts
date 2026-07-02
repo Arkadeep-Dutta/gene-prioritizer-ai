@@ -6,6 +6,9 @@ import { prisma } from "@/lib/db/prisma";
 import { RankingError } from "@/lib/ranking/errors";
 import { normalizeRankingInput } from "@/lib/ranking/input";
 import { rankGenes } from "@/lib/ranking/rank-genes";
+import { requestParsingErrorResponse } from "@/lib/security/errors";
+import { enforceRateLimit } from "@/lib/security/rate-limit";
+import { readJsonWithLimit } from "@/lib/security/request";
 
 export const dynamic = "force-dynamic";
 
@@ -25,12 +28,18 @@ const emptyRankingData = {
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
+    const limited = enforceRateLimit(request, "prioritize");
+    if (limited) return limited;
+
+    const body = await readJsonWithLimit(request);
     const input = await normalizeRankingInput(prisma, body);
     const ranking = await rankGenes(prisma, input);
 
     return NextResponse.json(okEnvelope(ranking, ranking.warnings));
   } catch (error) {
+    const requestError = requestParsingErrorResponse(emptyRankingData, error);
+    if (requestError) return requestError;
+
     if (error instanceof RankingError) {
       return NextResponse.json(
         errorEnvelope(emptyRankingData, error.code, error.message, error.warnings),

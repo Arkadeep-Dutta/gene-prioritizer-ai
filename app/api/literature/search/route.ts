@@ -6,6 +6,10 @@ import { prisma } from "@/lib/db/prisma";
 import { getLiteratureConfig } from "@/lib/literature/config";
 import { LiteratureError } from "@/lib/literature/errors";
 import { searchLiterature } from "@/lib/literature/search";
+import { getSecurityConfig } from "@/lib/security/config";
+import { requestParsingErrorResponse } from "@/lib/security/errors";
+import { enforceRateLimit } from "@/lib/security/rate-limit";
+import { readJsonWithLimit } from "@/lib/security/request";
 
 export const dynamic = "force-dynamic";
 
@@ -34,9 +38,22 @@ const emptyLiteratureData = {
 
 export async function POST(request: Request) {
   try {
+    const limited = enforceRateLimit(request, "literature");
+    if (limited) return limited;
+
     const config = getLiteratureConfig();
-    const body = requestSchema.parse(await request.json());
+    const body = requestSchema.parse(await readJsonWithLimit(request));
     const geneSymbols = body.geneSymbols ?? (body.geneSymbol ? [body.geneSymbol] : []);
+    if (geneSymbols.length > getSecurityConfig().maxLiteratureGenes) {
+      return NextResponse.json(
+        errorEnvelope(
+          emptyLiteratureData,
+          "LITERATURE_GENE_LIMIT_EXCEEDED",
+          "Too many genes were submitted for literature search.",
+        ),
+        { status: 400 },
+      );
+    }
     const result = await searchLiterature({
       prisma,
       geneSymbols,
@@ -49,6 +66,9 @@ export async function POST(request: Request) {
 
     return NextResponse.json(okEnvelope(result, result.warnings));
   } catch (error) {
+    const requestError = requestParsingErrorResponse(emptyLiteratureData, error);
+    if (requestError) return requestError;
+
     if (error instanceof LiteratureError) {
       return NextResponse.json(
         errorEnvelope(emptyLiteratureData, error.code, error.message, error.warnings),

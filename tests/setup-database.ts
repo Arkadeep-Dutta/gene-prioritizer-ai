@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { existsSync, rmSync } from "node:fs";
+import { closeSync, existsSync, openSync, rmSync } from "node:fs";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -18,15 +18,12 @@ export default async function setupDatabase() {
     const path = `${databasePath}${suffix}`;
     if (existsSync(path)) rmSync(path, { force: true });
   }
+  closeSync(openSync(databasePath, "w"));
 
-  execFileSync(
-    process.execPath,
-    [prismaCli, "db", "push", "--skip-generate", "--accept-data-loss"],
-    {
-      env: process.env,
-      stdio: "pipe",
-    },
-  );
+  execFileSync(process.execPath, [prismaCli, "migrate", "deploy"], {
+    env: process.env,
+    stdio: "pipe",
+  });
 
   const { seedDatabase } = await import("../prisma/seed");
   await seedDatabase();

@@ -1,5 +1,6 @@
 import "dotenv/config";
 
+import { existsSync } from "node:fs";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 
@@ -23,10 +24,35 @@ export async function buildHpoData() {
     console.log(`HPO association import limit enabled: ${associationLimit}`);
   }
 
-  const counts = await importHpoData(prisma, {
+  const rawSources = {
     ontologyPath: resolve(rawDir, HPO_SOURCE_FILES.ontology.fileName),
     phenotypeToGenesPath: resolve(rawDir, HPO_SOURCE_FILES.phenotypeToGenes.fileName),
     genesToPhenotypePath: resolve(rawDir, HPO_SOURCE_FILES.genesToPhenotype.fileName),
+  };
+  const missingRawSources = Object.values(rawSources).filter((path) => !existsSync(path));
+  const sourcePaths =
+    missingRawSources.length === 0
+      ? rawSources
+      : {
+          ontologyPath: resolve(process.cwd(), "tests/fixtures/hpo/hp.fixture.obo"),
+          phenotypeToGenesPath: resolve(
+            process.cwd(),
+            "tests/fixtures/hpo/phenotype_to_genes.fixture.txt",
+          ),
+          genesToPhenotypePath: resolve(
+            process.cwd(),
+            "tests/fixtures/hpo/genes_to_phenotype.fixture.txt",
+          ),
+        };
+
+  if (missingRawSources.length > 0) {
+    console.warn(
+      "HPO raw source files are missing; importing bundled synthetic fixtures for offline local/CI verification.",
+    );
+  }
+
+  const counts = await importHpoData(prisma, {
+    ...sourcePaths,
     batchSize,
     associationLimit:
       associationLimit !== undefined && Number.isFinite(associationLimit)

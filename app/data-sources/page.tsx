@@ -7,7 +7,10 @@ export default function DataSourcesPage() {
         <li>HGNC data is used for gene nomenclature validation and alias resolution.</li>
         <li>PubMed/NCBI E-utilities provide optional literature citation evidence.</li>
         <li>ClinVar is provided as a safe external search linkout only.</li>
-        <li>GeneCards is linkout only when enabled. The app does not scrape GeneCards.</li>
+        <li>
+          GeneCards is linkout only by default. Licensed GeneCards/GeneALaCart CSV/TSV import is
+          admin-only, disabled by default, and does not scrape GeneCards.
+        </li>
       </ul>
     </main>
   );

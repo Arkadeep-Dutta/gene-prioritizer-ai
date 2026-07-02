@@ -20,6 +20,12 @@ export type ExportCandidateGene = {
 export type ReportExportInput = {
   timestamp?: string;
   appVersion?: string;
+  build?: {
+    appVersion: string;
+    buildCommitSha: string | null;
+    buildTime: string | null;
+    deploymentTarget: string;
+  };
   includeRawText?: boolean;
   rawText?: string;
   inputSummary: {

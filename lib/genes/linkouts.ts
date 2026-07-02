@@ -1,11 +1,8 @@
 import type { GeneLinkouts } from "./types";
+import { createGeneCardsLinkout } from "@/lib/genecards/linkout";
 
 function encodeSymbol(symbol: string): string {
   return encodeURIComponent(symbol.trim().toUpperCase());
-}
-
-function isGeneCardsEnabled(environment: NodeJS.ProcessEnv = process.env): boolean {
-  return environment.GENE_CARDS_LINKOUT_ENABLED !== "false";
 }
 
 export function generateGeneLinkouts(
@@ -41,8 +38,9 @@ export function generateGeneLinkouts(
     )}`;
   }
 
-  if (isGeneCardsEnabled(environment)) {
-    links.geneCards = `https://www.genecards.org/cgi-bin/carddisp.pl?gene=${symbol}`;
+  const geneCards = createGeneCardsLinkout(symbol, environment);
+  if (geneCards) {
+    links.geneCards = geneCards;
   }
 
   return links;

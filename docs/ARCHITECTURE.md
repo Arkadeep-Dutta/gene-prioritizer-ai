@@ -1,6 +1,6 @@
 # Architecture Contract
 
-Status: accepted foundation contract through Phase 8. Later changes require documentation, tests,
+Status: accepted foundation contract through Phase 9. Later changes require documentation, tests,
 and a clear migration path.
 
 ## 1. High-level architecture
@@ -40,6 +40,7 @@ lib/
   ranking/           Phase 5 deterministic scoring and explanations
   phenotype/         Phase 6 free-text extraction and HPO candidate mapping
   literature/        Phase 7 PubMed query, NCBI client, parser, cache, and evidence storage
+  security/          Phase 9 headers, CSP, rate limits, admin auth, audit, and redaction
   llm/               Optional disabled-by-default LLM provider interfaces
   integrations/      Future external adapters
 data/
@@ -115,6 +116,18 @@ The browser UI is a React/App Router layer over existing APIs. It keeps raw free
 only, requires HPO confirmation before ranking, displays score limitations and data status, and
 generates JSON/CSV/Markdown exports that exclude raw text by default.
 
+Current Phase 9 security flow:
+
+```text
+request -> middleware/security headers -> rate limit -> request size/JSON validation -> service layer -> privacy-safe persistence/audit -> safe response envelope
+```
+
+Current admin flow:
+
+```text
+admin request -> secret verification -> rate limit -> audit log -> safe status/deferred update response
+```
+
 ## 4. Safety model
 
 - Research and educational use only; no diagnosis, treatment, or clinical decision support.
@@ -131,6 +144,8 @@ generates JSON/CSV/Markdown exports that exclude raw text by default.
 - PubMed citations must come from NCBI E-utilities responses or test fixtures; LLMs may not invent
   PMIDs, titles, journals, authors, or claims.
 - Literature counts can add only a modest capped boost and never replace deterministic HPO ranking.
+- Security controls must never imply diagnosis, HIPAA compliance, or clinical deployment readiness.
+- Admin requests must not execute arbitrary shell commands or accept arbitrary file paths.
 
 ## 5. Data source model
 
@@ -268,12 +283,16 @@ network calls.
 - [x] Add informational pages and data source/version status display
 - [x] Add component, export, API helper, and page tests
 
-### Phase 9 — Security hardening and workflow resilience
+### Phase 9 — Security hardening and workflow resilience (complete)
 
-- [ ] Add rate/size limits and structured redacted errors
-- [ ] Add production-grade rate limiting, abuse protection, and observability
-- [ ] Add stable end-to-end and container smoke tests with synthetic workflows
-- [ ] Complete accessibility and privacy threat reviews
+- [x] Add centralized security headers and Content Security Policy
+- [x] Add request body limits and safe invalid JSON handling for expensive endpoints
+- [x] Add configurable in-memory rate limiting for expensive and admin endpoints
+- [x] Add protected admin status and deferred data update endpoints
+- [x] Add audit logging with hashed identifiers and redacted metadata
+- [x] Add robots/noindex protection for API/admin surfaces
+- [x] Add security, admin, rate-limit, redaction, and no-secret-leakage tests
+- [x] Document production limitations, including memory rate limiter scope
 
 ### Phase 10 — Report and linkouts
 
@@ -281,6 +300,79 @@ network calls.
 - [ ] Label computed, sourced, user-provided, and AI-assisted content
 - [ ] Add safe PubMed and GeneCards user-clicked links; never scrape GeneCards
 - [ ] Test escaping, injection resistance, snapshots, printing, and partial evidence
+
+## Phase 10 licensed GeneCards import flow
+
+Phase 10 adds a disabled-by-default, admin-only licensed import path:
+
+```text
+admin licensed CSV/TSV upload
+  -> admin secret check
+  -> feature flag check
+  -> license confirmation
+  -> file validation
+  -> defensive parser
+  -> LicensedGeneCardsImport
+  -> LicensedGeneCardsGeneAnnotation
+  -> optional gene detail display/export labels
+```
+
+Non-flow:
+
+```text
+No GeneCards scraping, crawling, HTML fetching, remote GeneCards download, website automation,
+mirroring, model training, or diagnostic-truth promotion.
+```
+
+Imported annotations are separate from HPO/HGNC/PubMed evidence. They may link to an existing
+`Gene` by symbol, but they do not validate symbols, change gene records, alter HPO associations,
+or change ranking scores. API/UI/export surfaces label them as user-provided licensed data and warn
+that they are not diagnostic evidence.
+
+Admin APIs:
+
+- `POST /api/import/genecards` imports a multipart CSV/TSV file with license confirmation.
+- `GET /api/admin/genecards/imports` lists safe import metadata.
+- `GET /api/admin/genecards/imports/[id]` returns import details and annotation field-name samples.
+
+All import attempts, successes, and failures write `AuditEvent` rows with redacted metadata and no
+raw uploaded file content.
+
+## Phase 11 deployment architecture
+
+```text
+browser
+  -> Next.js app/API
+    -> Prisma
+      -> SQLite for local/Codespaces/demo
+      -> PostgreSQL for production Docker/Vercel/Railway/Render
+    -> optional outbound APIs when enabled: HGNC, PubMed/NCBI, optional LLM
+```
+
+Docker Compose:
+
+```text
+app container -> postgres container -> persistent postgres-data volume
+```
+
+Vercel:
+
+```text
+Vercel Next.js serverless/runtime -> managed PostgreSQL
+trusted CLI/CI job -> Prisma migrations + HPO import/update
+```
+
+Railway/Render:
+
+```text
+Node web service -> managed PostgreSQL
+platform health check -> /api/health
+```
+
+Deployment checks live in `lib/deployment/env-check.ts` and are exposed through
+`npm run deploy:check`, public health warning counts, and detailed admin status warnings. Build
+metadata is safe and optional: `APP_VERSION`, `BUILD_COMMIT_SHA`, `BUILD_TIME`, and
+`DEPLOYMENT_TARGET`.
 
 ### Phase 11 — Production hardening
 

@@ -5,6 +5,9 @@ import { errorEnvelope, okEnvelope } from "@/lib/api/response";
 import { prisma } from "@/lib/db/prisma";
 import { PhenotypeExtractionError } from "@/lib/phenotype/errors";
 import { extractPhenotypes, PHENOTYPE_EXTRACTION_DISCLAIMER } from "@/lib/phenotype/extract";
+import { requestParsingErrorResponse } from "@/lib/security/errors";
+import { enforceRateLimit } from "@/lib/security/rate-limit";
+import { readJsonWithLimit } from "@/lib/security/request";
 
 export const dynamic = "force-dynamic";
 
@@ -30,10 +33,16 @@ const emptyExtractionData = {
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
+    const limited = enforceRateLimit(request, "phenotypeExtract");
+    if (limited) return limited;
+
+    const body = await readJsonWithLimit(request);
     const extraction = await extractPhenotypes(prisma, body);
     return NextResponse.json(okEnvelope(extraction, extraction.warnings));
   } catch (error) {
+    const requestError = requestParsingErrorResponse(emptyExtractionData, error);
+    if (requestError) return requestError;
+
     if (error instanceof PhenotypeExtractionError) {
       return NextResponse.json(
         errorEnvelope(emptyExtractionData, error.code, error.message, error.warnings),

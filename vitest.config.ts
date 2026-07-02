@@ -10,6 +10,7 @@ export default defineConfig({
   test: {
     environment: "jsdom",
     exclude: ["**/node_modules/**", "**/.git/**", "work/**"],
+    fileParallelism: false,
     globalSetup: ["./tests/setup-database.ts"],
     globals: true,
     setupFiles: ["./vitest.setup.ts"],

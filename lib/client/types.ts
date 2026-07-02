@@ -27,6 +27,15 @@ export type GeneValidationData = {
   summary: GeneValidationSummary | null;
 };
 
+export type HpoTermLookupData = {
+  hpoId: string;
+  label?: string;
+  definition?: string | null;
+  isObsolete?: boolean;
+  replacedBy?: string | null;
+  term?: null;
+};
+
 export type PrioritizeRequest = {
   hpoTerms: string[];
   candidateGenes?: string[];
@@ -42,6 +51,13 @@ export type PrioritizeRequest = {
 
 export type HealthData = {
   status: string;
+  build?: {
+    appVersion: string;
+    buildCommitSha: string | null;
+    buildTime: string | null;
+    deploymentTarget: string;
+  };
+  deployment?: { target: string; warningsCount: number; errorCount: number };
   data: {
     counts: {
       hpoTerms: number;
@@ -60,6 +76,12 @@ export type HealthData = {
 };
 
 export type DataVersionData = {
+  build?: {
+    appVersion: string;
+    buildCommitSha: string | null;
+    buildTime: string | null;
+    deploymentTarget: string;
+  };
   phenotypeExtraction: Record<string, unknown>;
   ranking: { algorithmVersion?: string };
   literature: Record<string, unknown>;

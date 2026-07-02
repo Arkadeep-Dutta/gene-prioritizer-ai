@@ -260,6 +260,76 @@ Important UI safety behavior:
 Informational pages are available at `/about`, `/methodology`, `/data-sources`, `/disclaimer`,
 `/privacy`, and `/security`.
 
+## Phase 9 security and privacy hardening
+
+Phase 9 adds deployable prototype hardening without changing the deterministic scientific ranking
+algorithm:
+
+- centralized security headers and CSP through `middleware.ts`;
+- request body limits and safe JSON parsing for expensive API routes;
+- in-memory rate limiting for prioritize, phenotype extraction, literature, gene validation, and
+  admin endpoints;
+- protected admin status/data-update APIs using `Authorization: Bearer <ADMIN_INGEST_SECRET>`;
+- audit logging for admin access/update attempts with hashed IPs and redacted metadata;
+- privacy-safe redaction helpers for secrets and clinical text;
+- `/robots.txt` disallow rules for `/api/` and `/admin/`;
+- a noindex `/admin/data` informational page; and
+- tests covering headers, CSP, rate limits, admin protection, audit logging, and redaction.
+
+Admin examples:
+
+```bash
+curl -i http://localhost:3000/api/admin/status
+
+curl -i http://localhost:3000/api/admin/status \
+  -H "Authorization: Bearer change-me-in-production"
+```
+
+The default admin secret is acceptable only for local development. Production deployments must set
+a rotated `ADMIN_INGEST_SECRET`; admin endpoints fail closed in production if the default placeholder
+is still configured.
+
+Security-focused tests:
+
+```bash
+npm test -- tests/security
+npm test -- tests/api/admin-status.test.ts tests/api/admin-data-update.test.ts
+```
+
+The memory rate limiter is useful for local/demo deployments. Production serverless deployments
+should use a shared backend such as Redis/Upstash before relying on rate limits across instances.
+
+## Phase 10 licensed GeneCards/GeneALaCart import
+
+GeneCards remains linkout-only by default. `GENE_CARDS_LINKOUT_ENABLED="true"` only generates a
+user-clicked URL from a sanitized symbol; it does not fetch, scrape, parse, crawl, mirror, or
+download GeneCards pages.
+
+Licensed import is disabled by default with `GENE_CARDS_LICENSED_IMPORT_ENABLED="false"`. Enable it
+only when the deployment has legal permission to store a user-provided GeneCards/GeneALaCart CSV or
+TSV export. Imports require:
+
+- `Authorization: Bearer <ADMIN_INGEST_SECRET>`;
+- multipart form-data with `file`, `licenseConfirmed=true`, and `licenseConfirmationText`;
+- `.csv` or `.tsv` extension, text content, size and row limits; and
+- explicit acknowledgement that the data is licensed user-provided annotation data.
+
+Endpoint example for a synthetic local fixture:
+
+```bash
+curl -i -X POST http://localhost:3000/api/import/genecards \
+  -H "Authorization: Bearer $ADMIN_INGEST_SECRET" \
+  -F "file=@tests/fixtures/genecards/licensed-export.fixture.tsv" \
+  -F "licenseConfirmed=true" \
+  -F "licenseConfirmationText=Licensed export confirmed for this deployment"
+```
+
+Imported rows are stored separately in `LicensedGeneCardsImport` and
+`LicensedGeneCardsGeneAnnotation`. They are labeled as user-provided licensed data, are optional in
+gene detail/export views, are not used for model training, and do not override HPO/HGNC/PubMed
+evidence or ranking scores. Every import attempt, success, and failure is audit-logged without raw
+file content.
+
 ## Prisma commands
 
 ```bash
@@ -273,6 +343,45 @@ npm run data:seed
 For PostgreSQL deployment, use the commands and migration notes in [DEPLOYMENT.md](./DEPLOYMENT.md).
 Never commit `.env` or real credentials.
 
+## Phase 11 deployment quickstart
+
+Local or Codespaces:
+
+```bash
+cp .env.example .env
+npm install
+npm run db:generate
+npm run db:migrate
+npm run data:seed
+npm run data:build-hpo
+npm run dev
+```
+
+Production-like Docker:
+
+```bash
+cp .env.docker.example .env.docker
+npm run docker:build
+npm run docker:up
+SMOKE_BASE_URL=http://localhost:3000 npm run smoke:api
+npm run docker:down
+```
+
+Deployment checks:
+
+```bash
+npm run deploy:check
+npm run smoke:api
+npm run verify
+npm run verify:full
+npm run release:check
+```
+
+Vercel, Railway, Render, PostgreSQL migrations, HPO imports, backup/rollback, and troubleshooting
+are documented in [DEPLOYMENT.md](./DEPLOYMENT.md), [OPERATIONS.md](./docs/OPERATIONS.md),
+[TROUBLESHOOTING.md](./docs/TROUBLESHOOTING.md), and
+[RELEASE_CHECKLIST.md](./docs/RELEASE_CHECKLIST.md).
+
 ## Quality checks
 
 ```bash
@@ -282,6 +391,7 @@ npm test
 npm run build
 npm run format:check
 npm audit --audit-level=moderate
+npm run test:e2e
 ```
 
 Tests create and remove an isolated SQLite database, seed it deterministically, import tiny HPO
@@ -290,7 +400,12 @@ fixtures, and require no external network.
 ## Documentation
 
 - [Architecture contract](./docs/ARCHITECTURE.md)
+- [Final audit](./docs/FINAL_AUDIT.md)
+- [Release notes](./docs/RELEASE_NOTES.md)
+- [Release candidate checklist](./docs/RELEASE_CANDIDATE_CHECKLIST.md)
 - [Deployment](./DEPLOYMENT.md)
+- [Operations](./docs/OPERATIONS.md)
+- [Troubleshooting](./docs/TROUBLESHOOTING.md)
 - [Data sources](./DATA_SOURCES.md)
 - [Security](./SECURITY.md)
 - [Privacy](./PRIVACY.md)

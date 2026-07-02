@@ -9,6 +9,7 @@ export type ApiEnvelope<TData> = {
   error?: {
     code: string;
     message: string;
+    details?: Record<string, unknown>;
   };
 };
 
@@ -28,12 +29,13 @@ export function errorEnvelope<TData>(
   code: string,
   message: string,
   warnings: string[] = [],
+  details?: Record<string, unknown>,
 ): ApiEnvelope<TData> {
   return {
     ok: false,
     data,
     warnings,
     meta: createRequestMeta(),
-    error: { code, message },
+    error: details ? { code, message, details } : { code, message },
   };
 }
