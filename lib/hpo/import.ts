@@ -168,29 +168,53 @@ export async function importHpoData(
 
   const parsedAssociationFiles: ParsedGeneAssociations[] = [];
   const associationHashes: Record<string, string> = {};
-  if (input.phenotypeToGenesPath && existsSync(input.phenotypeToGenesPath)) {
-    parsedAssociationFiles.push(await parsePhenotypeToGenesFile(input.phenotypeToGenesPath));
-    associationHashes[basename(input.phenotypeToGenesPath)] = await sha256File(
-      input.phenotypeToGenesPath,
-    );
-  }
-  if (input.genesToPhenotypePath && existsSync(input.genesToPhenotypePath)) {
-    parsedAssociationFiles.push(await parseGenesToPhenotypeFile(input.genesToPhenotypePath));
-    associationHashes[basename(input.genesToPhenotypePath)] = await sha256File(
-      input.genesToPhenotypePath,
-    );
-  }
-
-  const merged = mergeAssociations(parsedAssociationFiles);
   const associationLimit =
     input.associationLimit !== undefined
       ? Math.max(0, Math.floor(input.associationLimit))
       : undefined;
+  let remainingAssociationLimit = associationLimit;
+  const associationLimitWarnings: string[] = [];
+
+  async function parseAssociationFile(
+    path: string | undefined,
+    parseFile: (filePath: string, options?: { limit?: number }) => Promise<ParsedGeneAssociations>,
+  ): Promise<void> {
+    if (!path || !existsSync(path)) return;
+    if (remainingAssociationLimit !== undefined && remainingAssociationLimit <= 0) {
+      associationLimitWarnings.push(
+        `${basename(path)} skipped because the HPO association import limit was reached.`,
+      );
+      return;
+    }
+
+    const parsed = await parseFile(path, { limit: remainingAssociationLimit });
+    parsedAssociationFiles.push(parsed);
+    associationHashes[basename(path)] = await sha256File(path);
+    if (remainingAssociationLimit !== undefined) {
+      remainingAssociationLimit = Math.max(
+        0,
+        remainingAssociationLimit - parsed.associations.length,
+      );
+    }
+  }
+
+  await parseAssociationFile(input.phenotypeToGenesPath, parsePhenotypeToGenesFile);
+  await parseAssociationFile(input.genesToPhenotypePath, parseGenesToPhenotypeFile);
+
+  const merged = mergeAssociations(parsedAssociationFiles);
+  merged.warnings.push(...associationLimitWarnings);
   const associationsToImport =
     associationLimit === undefined
       ? merged.associations
       : merged.associations.slice(0, associationLimit);
-  const associationsSkipped = merged.associations.length - associationsToImport.length;
+  const associationLimitApplied =
+    associationLimit !== undefined &&
+    (associationsToImport.length < merged.associations.length ||
+      parsedAssociationFiles.some((entry) => entry.truncated) ||
+      associationLimitWarnings.length > 0);
+  const associationsSkipped = associationLimitApplied
+    ? Math.max(0, merged.associations.length - associationsToImport.length)
+    : 0;
   const associationChecksum = sha256Text(JSON.stringify(associationHashes));
   const associationSource = await prisma.dataSourceVersion.upsert({
     where: {

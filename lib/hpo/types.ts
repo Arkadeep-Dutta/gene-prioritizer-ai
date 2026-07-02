@@ -45,9 +45,14 @@ export type GenePhenotypeAssociationInput = {
   sourceFile: string;
 };
 
+export type HpoAssociationParseOptions = {
+  limit?: number;
+};
+
 export type ParsedGeneAssociations = {
   associations: GenePhenotypeAssociationInput[];
   warnings: string[];
+  truncated?: boolean;
 };
 
 export type HpoImportInput = {
