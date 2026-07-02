@@ -1,6 +1,10 @@
 import { HpoParseError } from "./errors";
 import { compactNullable, normalizeGeneSymbol, normalizeHeader } from "./normalize";
-import type { GenePhenotypeAssociationInput, ParsedGeneAssociations } from "./types";
+import type {
+  GenePhenotypeAssociationInput,
+  HpoAssociationParseOptions,
+  ParsedGeneAssociations,
+} from "./types";
 import { assertValidHpoId } from "./validate";
 
 type ColumnSpec = {
@@ -47,6 +51,7 @@ function getValue(cells: string[], index: number): string | undefined {
 export function parseGeneAssociationTsvText(
   text: string,
   sourceFile: string,
+  options: HpoAssociationParseOptions = {},
 ): ParsedGeneAssociations {
   if (!text.trim()) throw new HpoParseError(`${sourceFile} is empty.`);
 
@@ -86,8 +91,16 @@ export function parseGeneAssociationTsvText(
   const warnings: string[] = [];
   const seen = new Set<string>();
   const associations: GenePhenotypeAssociationInput[] = [];
+  const limit = options.limit !== undefined ? Math.max(0, Math.floor(options.limit)) : undefined;
+  let truncated = false;
 
   for (let index = headerLineIndex + 1; index < lines.length; index += 1) {
+    if (limit !== undefined && associations.length >= limit) {
+      truncated = true;
+      warnings.push(`${sourceFile}: association parse limit reached at ${limit}.`);
+      break;
+    }
+
     const rawLine = lines[index]!;
     const trimmed = rawLine.trim();
     if (!trimmed || trimmed.startsWith("#") || trimmed.startsWith("!")) continue;
@@ -126,5 +139,5 @@ export function parseGeneAssociationTsvText(
     });
   }
 
-  return { associations, warnings };
+  return { associations, warnings, truncated };
 }
