@@ -150,12 +150,29 @@ traffic use. Do not call live PubMed in CI tests; tests use fixtures and mocks.
 
 ## Docker Compose
 
+Docker Compose is the production-like local deployment path and uses PostgreSQL, not SQLite. The
+Docker image generates Prisma Client from `prisma/postgresql/schema.prisma`; local development keeps
+using `prisma/schema.prisma` with SQLite.
+
 ```bash
-docker compose up --build
+cp .env.docker.example .env.docker
+# rotate ADMIN_INGEST_SECRET in .env.docker before exposing admin routes
+npm run docker:build
+npm run docker:up
+SMOKE_BASE_URL=http://localhost:3000 npm run smoke:api
+npm run docker:down
 ```
 
-Compose is suitable for a disposable SQLite demo. Mount persistent storage if you want to keep the
-SQLite database or HPO cache between container restarts.
+Compose starts `postgres`, then a one-time `migrate` service runs PostgreSQL migrations,
+`npm run data:seed`, and `npm run data:build-hpo` before the `app` service starts. Raw HPO files are
+not copied into the image; when they are absent, the HPO build imports bundled synthetic fixtures so
+Docker smoke checks stay fast and deterministic. The `postgres-data` volume persists database state,
+and Compose does not run destructive resets automatically.
+
+If the app health check reports `URL must start with the protocol file:` or `DATABASE_UNREACHABLE`
+while using a PostgreSQL `DATABASE_URL`, the image was generated with the SQLite Prisma schema by
+mistake. Rebuild with `npm run docker:build` and confirm the Dockerfile runs
+`npm run db:generate:postgres`.
 
 ## PostgreSQL production
 
@@ -323,13 +340,11 @@ SMOKE_BASE_URL=http://localhost:3000 npm run smoke:api
 npm run docker:down
 ```
 
-Compose starts `postgres` with a persistent `postgres-data` volume and the `app` container with
-GeneCards licensed import disabled. It does not run destructive resets automatically. For a fresh
-PostgreSQL volume, run migrations from a trusted shell before relying on the app:
-
-```bash
-DATABASE_URL="postgresql://..." DIRECT_URL="postgresql://..." npm run db:migrate:prod
-```
+Compose starts `postgres` with a persistent `postgres-data` volume, runs the `migrate` service to
+apply PostgreSQL migrations plus seed/HPO fixture import, and then starts the `app` container with
+GeneCards licensed import disabled. It does not run destructive resets automatically. The Docker
+image must be generated with `npm run db:generate:postgres`; generating it with the SQLite schema can
+produce `URL must start with the protocol file:` during health checks.
 
 ### Vercel
 

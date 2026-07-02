@@ -27,17 +27,18 @@
     "docker:up": "docker compose --env-file .env.docker up --build",
     "docker:down": "docker compose --env-file .env.docker down",
     "db:generate": "prisma generate",
-    "db:generate:postgres": "prisma generate --config prisma/postgresql/prisma.config.ts",
+    "db:generate:postgres": "prisma generate --config=prisma/postgresql/prisma.config.ts",
     "db:migrate": "prisma migrate dev",
     "db:migrate:deploy": "prisma migrate deploy",
-    "db:migrate:prod": "prisma migrate deploy --config prisma/postgresql/prisma.config.ts",
-    "db:migrate:postgres": "prisma migrate deploy --config prisma/postgresql/prisma.config.ts",
+    "db:migrate:prod": "npm run db:migrate:postgres:deploy",
+    "db:migrate:postgres": "npm run db:migrate:postgres:deploy",
     "db:studio": "prisma studio",
     "data:download-hpo": "tsx scripts/download-hpo.ts",
     "data:build-hpo": "tsx scripts/build-hpo.ts",
     "data:update": "tsx scripts/update-hpo.ts",
     "data:seed": "tsx prisma/seed.ts",
-    "setup": "npm run db:generate && npm run db:migrate && npm run data:seed"
+    "setup": "npm run db:generate && npm run db:migrate && npm run data:seed",
+    "db:migrate:postgres:deploy": "prisma migrate deploy --config=prisma/postgresql/prisma.config.ts"
   },
   "dependencies": {
     "@prisma/client": "6.19.3",

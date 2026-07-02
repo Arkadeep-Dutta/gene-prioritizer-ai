@@ -39,10 +39,17 @@ Copy the Docker env template and replace the admin secret:
 
 ```bash
 cp .env.docker.example .env.docker
+# rotate ADMIN_INGEST_SECRET
+npm run docker:build
 npm run docker:up
+SMOKE_BASE_URL=http://localhost:3000 npm run smoke:api
+npm run docker:down
 ```
 
-If the app starts before migrations have been applied to a fresh PostgreSQL volume, run migrations from a trusted CLI context and restart the app. Compose does not run destructive resets automatically.
+Compose uses PostgreSQL and runs a one-time `migrate` service before the app starts. If the health
+endpoint reports `URL must start with the protocol file:` while `DATABASE_URL` is PostgreSQL, the
+image was generated with the SQLite Prisma schema by mistake. Rebuild and confirm Docker uses
+`npm run db:generate:postgres`. Compose does not run destructive resets automatically.
 
 ## Production Warnings
 

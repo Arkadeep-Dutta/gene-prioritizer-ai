@@ -45,6 +45,25 @@ npm run data:build-hpo
 
 Back up PostgreSQL before migrations. Do not run destructive resets automatically in production.
 
+## Docker Compose
+
+Docker Compose uses PostgreSQL. The Dockerfile generates Prisma Client from
+`prisma/postgresql/schema.prisma`; local and Codespaces development continue to use the default
+SQLite schema at `prisma/schema.prisma`.
+
+```bash
+cp .env.docker.example .env.docker
+# rotate ADMIN_INGEST_SECRET in .env.docker
+npm run docker:build
+npm run docker:up
+SMOKE_BASE_URL=http://localhost:3000 npm run smoke:api
+npm run docker:down
+```
+
+Compose waits for `postgres`, runs the one-time `migrate` service
+(`db:migrate:postgres:deploy`, `data:seed`, `data:build-hpo`), and starts `app` only after that job
+completes. If raw HPO files are absent, the import uses bundled synthetic fixtures.
+
 ## HPO Data
 
 `npm run data:build-hpo` imports bundled synthetic fixtures when raw HPO files are absent. For full HPO data, run `npm run data:download-hpo` and `npm run data:update` from a trusted CLI environment with appropriate storage. Do not run long imports from a public API request.
