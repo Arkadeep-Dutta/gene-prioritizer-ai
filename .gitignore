@@ -35,4 +35,8 @@ Thumbs.db
 000_PHASE*
 AAA*
 CODEX_*
-FAILFILE*.env.docker
+FAILFILE*
+
+# Local Docker environment file
+.env.docker
+
