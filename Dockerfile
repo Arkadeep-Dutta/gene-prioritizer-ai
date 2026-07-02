@@ -9,7 +9,8 @@ RUN npm ci
 FROM base AS builder
 COPY --from=dependencies /app/node_modules ./node_modules
 COPY . .
-RUN npm run db:generate && npm run build
+RUN npm run db:generate:postgres
+RUN DATABASE_URL="postgresql://gene_prio:gene_prio_local_change_me@localhost:5432/gene_prio?schema=public"     DIRECT_URL="postgresql://gene_prio:gene_prio_local_change_me@localhost:5432/gene_prio?schema=public"     npm run build
 
 FROM base AS runner
 ENV NODE_ENV=production

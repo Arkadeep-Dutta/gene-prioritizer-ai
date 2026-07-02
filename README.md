@@ -357,15 +357,19 @@ npm run data:build-hpo
 npm run dev
 ```
 
-Production-like Docker:
+Production-like Docker with PostgreSQL:
 
 ```bash
 cp .env.docker.example .env.docker
+# rotate ADMIN_INGEST_SECRET in .env.docker
 npm run docker:build
 npm run docker:up
 SMOKE_BASE_URL=http://localhost:3000 npm run smoke:api
 npm run docker:down
 ```
+
+Docker uses the PostgreSQL Prisma schema and Compose runs migrations, seed, and HPO fixture import
+before the app starts. Local and Codespaces development continue to use SQLite.
 
 Deployment checks:
 
