@@ -60,3 +60,32 @@ npm run deploy:check
 ```
 
 Warnings intentionally avoid secret values. Errors must be fixed before production deployment.
+
+## HPO Import Modes
+
+Use `HPO_IMPORT_MODE=fixture` for bounded local/CI verification and `HPO_IMPORT_MODE=full` only for production or staging imports from `data/hpo/raw/`.
+
+Fixture import:
+
+```bash
+HPO_IMPORT_MODE=fixture npm run data:build-hpo
+```
+
+Full production import:
+
+```bash
+npm run data:download-hpo
+HPO_IMPORT_MODE=full npm run data:build-hpo
+```
+
+If full mode fails with missing raw files, run `npm run data:download-hpo` or place the official HPO files in `data/hpo/raw/`: `hp.obo`, `phenotype_to_genes.txt`, and `genes_to_phenotype.txt`.
+
+If full mode fails because `HPO_ASSOCIATION_IMPORT_LIMIT` is set, unset that variable or switch to `HPO_IMPORT_MODE=fixture`. Full mode is intentionally explicit so CI cannot run the large import by default.
+
+Check imported counts through health:
+
+```bash
+curl -s http://localhost:3000/api/health | jq '.data.data.counts'
+```
+
+These modes do not scrape GeneCards and do not add OMIM, ClinVar, VCF, Exomiser, model training, or new biomedical claims.

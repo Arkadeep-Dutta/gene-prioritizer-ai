@@ -440,3 +440,33 @@ For release-candidate packaging, also review
 
 See [docs/TROUBLESHOOTING.md](./docs/TROUBLESHOOTING.md) for SQLite lock cleanup, missing `.env`,
 HPO fixture fallback, port conflicts, Docker Compose notes, and production warning interpretation.
+
+## HPO Import Modes
+
+The HPO importer supports an explicit `HPO_IMPORT_MODE` environment variable with two allowed values:
+
+- `fixture`: bounded synthetic HPO fixtures for tests, CI, local verification, and fast demos. This is the default.
+- `full`: production/staging import from raw HPO files in `data/hpo/raw/`.
+
+Fixture import:
+
+```bash
+HPO_IMPORT_MODE=fixture npm run data:build-hpo
+```
+
+Full production import:
+
+```bash
+npm run data:download-hpo
+HPO_IMPORT_MODE=full npm run data:build-hpo
+```
+
+The full mode uses the official HPO download locations already allowlisted by `npm run data:download-hpo`: `hp.obo`, `phenotype_to_genes.txt`, and `genes_to_phenotype.txt`. Full mode fails if those raw files are missing. It also rejects `HPO_ASSOCIATION_IMPORT_LIMIT`; use fixture mode for bounded verification.
+
+Check imported counts through health:
+
+```bash
+curl -s http://localhost:3000/api/health | jq '.data.data.counts'
+```
+
+GeneCards remains linkout/import-only as documented elsewhere; HPO import modes do not scrape GeneCards or add OMIM/ClinVar/VCF/Exomiser/model-training behavior.
