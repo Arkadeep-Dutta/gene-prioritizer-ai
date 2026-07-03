@@ -151,6 +151,7 @@ export async function buildHpoData() {
     ...plan.sourcePaths,
     batchSize: plan.batchSize,
     associationLimit: plan.associationLimit,
+    onProgress: plan.mode === "full" ? (message) => console.log(message) : undefined,
   });
 
   console.log("Imported phenotype terms: " + counts.terms);

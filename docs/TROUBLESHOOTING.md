@@ -89,3 +89,15 @@ curl -s http://localhost:3000/api/health | jq '.data.data.counts'
 ```
 
 These modes do not scrape GeneCards and do not add OMIM, ClinVar, VCF, Exomiser, model training, or new biomedical claims.
+
+## Full HPO import appears quiet
+
+```bash
+npm run data:download-hpo
+unset HPO_ASSOCIATION_IMPORT_LIMIT
+HPO_IMPORT_MODE=full npm run data:build-hpo
+```
+
+Full HPO import can take longer than fixture verification because it parses and imports the raw `hp.obo`, `phenotype_to_genes.txt`, and `genes_to_phenotype.txt` files. A healthy full import should show progress lines for parsing each file, parsed totals before database import, and database batch progress such as phenotype term, gene, and gene-phenotype association batches.
+
+If the output stops after `Using raw HPO source files from data/hpo/raw`, verify that the process was started from the current app version, that `HPO_ASSOCIATION_IMPORT_LIMIT` is unset, and that the database has enough disk/CPU headroom for the batched import. Full mode intentionally rejects `HPO_ASSOCIATION_IMPORT_LIMIT`; use `HPO_IMPORT_MODE=fixture` for bounded CI or smoke verification.

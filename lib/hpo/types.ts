@@ -61,6 +61,7 @@ export type HpoImportInput = {
   genesToPhenotypePath?: string;
   batchSize?: number;
   associationLimit?: number;
+  onProgress?: (message: string) => void;
 };
 
 export type HpoImportCounts = {

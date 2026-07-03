@@ -69,6 +69,37 @@ describe("importHpoData", () => {
     expect(limited.associations).toBeLessThanOrEqual(2);
     expect(limited.genes).toBeLessThanOrEqual(2);
   });
+  it("emits parse and database progress when requested", async () => {
+    const messages: string[] = [];
+
+    await importHpoData(prisma, {
+      ...fixturePaths,
+      batchSize: 2,
+      onProgress: (message) => messages.push(message),
+    });
+
+    expect(messages.some((message) => message.includes("Parsing hp.obo started"))).toBe(true);
+    expect(messages.some((message) => message.includes("Parsing hp.obo finished"))).toBe(true);
+    expect(messages.some((message) => message.includes("Parsing phenotype_to_genes started"))).toBe(
+      true,
+    );
+    expect(
+      messages.some((message) => message.includes("Parsing phenotype_to_genes finished")),
+    ).toBe(true);
+    expect(messages.some((message) => message.includes("Parsing genes_to_phenotype started"))).toBe(
+      true,
+    );
+    expect(
+      messages.some((message) => message.includes("Parsing genes_to_phenotype finished")),
+    ).toBe(true);
+    expect(
+      messages.some((message) => message.includes("Parsed HPO totals before database import")),
+    ).toBe(true);
+    expect(
+      messages.some((message) => message.includes("Database import: gene-phenotype associations")),
+    ).toBe(true);
+    expect(messages.at(-1)).toBe("Database import finished.");
+  });
 
   it("defaults to bounded fixture mode even when raw HPO files are present", () => {
     const plan = resolveHpoImportPlan(
