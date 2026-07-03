@@ -33,3 +33,7 @@ export const MAX_HPO_SEARCH_LIMIT = 50;
 export const DEFAULT_HPO_SEARCH_LIMIT = 20;
 export const MAX_HPO_QUERY_LENGTH = 100;
 export const MAX_DOWNLOAD_BYTES = 250 * 1024 * 1024;
+
+export const HPO_IMPORT_MODES = ["fixture", "full"] as const;
+export type HpoImportMode = (typeof HPO_IMPORT_MODES)[number];
+export const DEFAULT_HPO_IMPORT_MODE: HpoImportMode = "fixture";
