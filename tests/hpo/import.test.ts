@@ -1,6 +1,6 @@
 import { execFile } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
-import { mkdtemp, rm } from "node:fs/promises";
+import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { promisify } from "node:util";
 
@@ -23,9 +23,22 @@ function env(overrides: Record<string, string | undefined>): NodeJS.ProcessEnv {
   return { ...process.env, ...overrides };
 }
 
-function lineCount(path: string): number {
-  return readFileSync(path, "utf8").trim().split(/\r?\n/).length;
+async function createTempRawHpoDataDir(): Promise<string> {
+  const hpoDataDir = await mkdtemp(resolve(process.cwd(), "hpo-full-raw-"));
+  const rawDir = resolve(hpoDataDir, "raw");
+  await mkdir(rawDir, { recursive: true });
+  await writeFile(resolve(rawDir, "hp.obo"), readFileSync(fixturePaths.ontologyPath));
+  await writeFile(
+    resolve(rawDir, "phenotype_to_genes.txt"),
+    readFileSync(fixturePaths.phenotypeToGenesPath),
+  );
+  await writeFile(
+    resolve(rawDir, "genes_to_phenotype.txt"),
+    readFileSync(fixturePaths.genesToPhenotypePath),
+  );
+  return hpoDataDir;
 }
+
 describe("importHpoData", () => {
   it("imports fixture data and is idempotent", async () => {
     const before = await prisma.genePhenotypeAssociation.count();
@@ -101,36 +114,56 @@ describe("importHpoData", () => {
     expect(messages.at(-1)).toBe("Database import finished.");
   });
 
-  it("defaults to bounded fixture mode even when raw HPO files are present", () => {
-    const plan = resolveHpoImportPlan(
-      env({
-        HPO_IMPORT_MODE: undefined,
-        HPO_ASSOCIATION_IMPORT_LIMIT: undefined,
-        HPO_DATA_DIR: "./data/hpo",
-      }),
-    );
+  it("defaults to bounded fixture mode even when raw HPO files are present", async () => {
+    const hpoDataDir = await createTempRawHpoDataDir();
 
-    expect(plan.mode).toBe("fixture");
-    expect(plan.sourcePaths.ontologyPath).toBe(fixturePaths.ontologyPath);
-    expect(plan.sourcePaths.phenotypeToGenesPath).toBe(fixturePaths.phenotypeToGenesPath);
-    expect(plan.sourcePaths.genesToPhenotypePath).toBe(fixturePaths.genesToPhenotypePath);
+    try {
+      const plan = resolveHpoImportPlan(
+        env({
+          HPO_IMPORT_MODE: undefined,
+          HPO_ASSOCIATION_IMPORT_LIMIT: undefined,
+          HPO_DATA_DIR: hpoDataDir,
+        }),
+      );
+
+      expect(plan.mode).toBe("fixture");
+      expect(plan.sourcePaths.ontologyPath).toBe(fixturePaths.ontologyPath);
+      expect(plan.sourcePaths.phenotypeToGenesPath).toBe(fixturePaths.phenotypeToGenesPath);
+      expect(plan.sourcePaths.genesToPhenotypePath).toBe(fixturePaths.genesToPhenotypePath);
+    } finally {
+      await rm(hpoDataDir, { recursive: true, force: true });
+    }
   });
 
-  it("uses full raw HPO files only when explicitly requested", () => {
-    const plan = resolveHpoImportPlan(
-      env({
-        HPO_IMPORT_MODE: "full",
-        HPO_ASSOCIATION_IMPORT_LIMIT: undefined,
-        HPO_DATA_DIR: "./data/hpo",
-      }),
-    );
+  it("uses full raw HPO files only when explicitly requested", async () => {
+    const hpoDataDir = await createTempRawHpoDataDir();
 
-    expect(plan.mode).toBe("full");
-    expect(plan.sourcePaths.ontologyPath).toContain("data/hpo/raw/hp.obo");
-    expect(plan.sourcePaths.phenotypeToGenesPath).toContain("data/hpo/raw/phenotype_to_genes.txt");
-    expect(plan.sourcePaths.genesToPhenotypePath).toContain("data/hpo/raw/genes_to_phenotype.txt");
-    expect(lineCount(plan.sourcePaths.phenotypeToGenesPath)).toBeGreaterThan(1_000);
-    expect(lineCount(plan.sourcePaths.genesToPhenotypePath)).toBeGreaterThan(1_000);
+    try {
+      const plan = resolveHpoImportPlan(
+        env({
+          HPO_IMPORT_MODE: "full",
+          HPO_ASSOCIATION_IMPORT_LIMIT: undefined,
+          HPO_DATA_DIR: hpoDataDir,
+        }),
+      );
+
+      expect(plan.mode).toBe("full");
+      expect(plan.sourcePaths.ontologyPath).toBe(resolve(hpoDataDir, "raw/hp.obo"));
+      expect(plan.sourcePaths.phenotypeToGenesPath).toBe(
+        resolve(hpoDataDir, "raw/phenotype_to_genes.txt"),
+      );
+      expect(plan.sourcePaths.genesToPhenotypePath).toBe(
+        resolve(hpoDataDir, "raw/genes_to_phenotype.txt"),
+      );
+
+      const counts = await importHpoData(prisma, { ...plan.sourcePaths, batchSize: 2 });
+      expect(counts.terms).toBeGreaterThanOrEqual(6);
+      expect(counts.terms).toBeLessThan(50);
+      expect(counts.associations).toBeGreaterThanOrEqual(6);
+      expect(counts.associations).toBeLessThan(50);
+    } finally {
+      await rm(hpoDataDir, { recursive: true, force: true });
+    }
   });
 
   it("fails clearly for invalid HPO import mode", () => {
