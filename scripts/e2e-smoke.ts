@@ -78,7 +78,7 @@ async function main() {
   try {
     if (shouldStartServer) server = startServer();
     await waitForServer(`${baseUrl}/`);
-    await expectPage("/", "Research and educational use only");
+    await expectPage("/", "Research and education only");
     await expectPage("/about", "About Gene Prioritizer AI");
     await expectPage("/methodology", "Methodology");
     await expectPage("/data-sources", "Data sources");

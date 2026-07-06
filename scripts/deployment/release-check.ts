@@ -1,3 +1,4 @@
+import { execFileSync } from "node:child_process";
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 
@@ -25,7 +26,8 @@ const requiredFiles = [
 
 const requiredScripts = ["verify", "verify:full", "deploy:check", "release:check", "smoke:api"];
 const skipDirs = new Set([".git", ".next", "node_modules", "work", "outputs", "coverage"]);
-const skipFiles = new Set(["package-lock.json", "tsconfig.tsbuildinfo"]);
+const localSecretArtifacts = [".env", ".env.docker", ".neon"];
+const skipFiles = new Set(["package-lock.json", "tsconfig.tsbuildinfo", ...localSecretArtifacts]);
 const skipExtensions = [".db", ".db-journal", ".db-shm", ".db-wal", ".sqlite", ".sqlite3", ".gz"];
 
 function assertFileExists(path: string) {
@@ -61,6 +63,35 @@ function assertNoScratchArtifacts() {
   const found = walkFiles().filter((path) => scratchName.test(path));
   if (found.length > 0) {
     throw new Error(`Scratch/debug artifacts remain: ${found.join(", ")}`);
+  }
+}
+
+function gitCheckIgnored(path: string): boolean {
+  try {
+    execFileSync("git", ["check-ignore", "--quiet", path], { stdio: "ignore" });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function gitTracked(path: string): boolean {
+  try {
+    execFileSync("git", ["ls-files", "--error-unmatch", path], { stdio: "ignore" });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function assertLocalSecretArtifactsIgnored() {
+  const unsafe = localSecretArtifacts.filter(
+    (path) => existsSync(path) && (!gitCheckIgnored(path) || gitTracked(path)),
+  );
+  if (unsafe.length > 0) {
+    throw new Error(
+      "Local secret files must be ignored and untracked before release: " + unsafe.join(", "),
+    );
   }
 }
 
@@ -134,6 +165,7 @@ assertPackageScripts();
 assertEnvExample();
 assertSafetyLanguage();
 assertNoScratchArtifacts();
+assertLocalSecretArtifactsIgnored();
 assertNoObviousSecrets();
 
 if (existsSync(".env") && statSync(".env").isFile()) {

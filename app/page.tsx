@@ -16,8 +16,8 @@ export default function Home() {
           not a diagnostic tool.
         </p>
         <p className="mt-4 max-w-3xl rounded-2xl border border-amber-300/60 bg-amber-200/10 p-4 text-amber-100">
-          Not a diagnosis. Research and educational use only. Results require review by qualified
-          genetics professionals.
+          Research and education only. Not for diagnosis, treatment, or clinical decision-making. Do
+          not submit identifiable patient data.
         </p>
       </section>
 

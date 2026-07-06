@@ -2,7 +2,6 @@ import { timingSafeEqual } from "node:crypto";
 
 import { errorEnvelope } from "@/lib/api/response";
 
-import { getAppEnvironment } from "./config";
 import { hashIdentifier } from "./redact";
 
 const DEFAULT_ADMIN_SECRET = "change-me-in-production";
@@ -29,12 +28,12 @@ export function verifyAdminRequest(request: Request): AdminAuthResult {
   const configuredSecret = process.env.ADMIN_INGEST_SECRET || DEFAULT_ADMIN_SECRET;
   const isDefaultSecret = configuredSecret === DEFAULT_ADMIN_SECRET;
 
-  if (getAppEnvironment() === "production" && (!configuredSecret || isDefaultSecret)) {
+  if (!configuredSecret || isDefaultSecret) {
     return {
       ok: false,
       status: 503,
       code: "ADMIN_SECRET_NOT_CONFIGURED",
-      message: "Admin endpoints are not configured.",
+      message: "Admin endpoints require ADMIN_INGEST_SECRET.",
     };
   }
 

@@ -20,6 +20,6 @@ describe("research safety messaging", () => {
     );
     expect(screen.getByRole("heading", { name: "Research use only" })).toBeInTheDocument();
     expect(screen.getByText(RESEARCH_DISCLAIMER)).toBeVisible();
-    expect(screen.getAllByText(/Not a diagnosis/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Not for diagnosis/i).length).toBeGreaterThan(0);
   });
 });
