@@ -73,7 +73,11 @@ describe("deployment Docker and CI configuration", () => {
     expect(dockerignore).toContain("!.env.example");
     expect(dockerignore).toContain("!.env.docker.example");
     expect(dockerignore).toContain("data/hpo/raw");
+    expect(dockerignore).toContain(".neon");
+    expect(dockerignore).toContain(".cache");
     expect(gitignore).toContain("/prisma/*.db");
+    expect(gitignore).toContain(".neon");
+    expect(gitignore).toContain(".cache");
     expect(gitignore).toContain("!.env.docker.example");
   });
 

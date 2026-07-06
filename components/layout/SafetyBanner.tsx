@@ -8,9 +8,9 @@ export function SafetyBanner() {
     >
       <h2 className="text-sm font-semibold uppercase tracking-[0.18em]">Research use only</h2>
       <p className="mt-2 leading-7">
-        Research and educational use only. Not medical advice. Not a diagnosis. Results require
-        review by qualified genetics professionals. Do not enter identifiable patient information
-        unless deployed in a compliant environment.
+        Research and education only. Not for diagnosis, treatment, or clinical decision-making.
+        Results require review by qualified genetics professionals. Do not submit identifiable
+        patient data.
       </p>
       <p className="mt-2 leading-7">{RESEARCH_DISCLAIMER}</p>
     </section>

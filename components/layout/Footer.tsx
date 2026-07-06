@@ -5,8 +5,8 @@ export function Footer() {
     <footer className="border-t border-slate-200 bg-slate-50">
       <div className="mx-auto max-w-7xl px-4 py-8 text-sm leading-6 text-slate-600 sm:px-6 lg:px-8">
         <p>
-          Gene Prioritizer AI is a research and educational decision-support application. It is not
-          a diagnostic system and does not replace qualified clinical genetics review.
+          Gene Prioritizer AI is for research and education only. It is not for diagnosis,
+          treatment, or clinical decision-making. Do not submit identifiable patient data.
         </p>
         <p className="mt-2">
           Review the <Link href="/disclaimer">disclaimer</Link>,{" "}

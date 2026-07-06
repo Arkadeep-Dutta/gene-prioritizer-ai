@@ -27,6 +27,16 @@ describe("POST /api/admin/data/update", () => {
     expect(body.error.code).toBe("ADMIN_UNAUTHORIZED");
   });
 
+  it("rejects admin routes when ADMIN_INGEST_SECRET is not configured", async () => {
+    delete process.env.ADMIN_INGEST_SECRET;
+
+    const response = await POST(updateRequest("anything"));
+    const body = await response.json();
+
+    expect(response.status).toBe(503);
+    expect(body.error.code).toBe("ADMIN_SECRET_NOT_CONFIGURED");
+  });
+
   it("returns a safe manual update response and logs audit events", async () => {
     process.env.ADMIN_INGEST_SECRET = "test-admin-secret";
     const before = await prisma.auditEvent.count();

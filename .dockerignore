@@ -22,6 +22,10 @@ data/hpo/raw
 data/hpo/cache
 data/hpo/metadata
 
+.neon
+.cache
+cache
+
 # Codex/debug scratch artifacts
 .codex*
 000_PHASE*

@@ -30,6 +30,10 @@ Thumbs.db
 *.db
 *.db-journal
 
+.neon
+.cache
+cache
+
 # Codex/debug scratch artifacts
 .codex*
 000_PHASE*

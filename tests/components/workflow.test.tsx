@@ -18,9 +18,9 @@ describe("workflow UI components", () => {
   it("renders required safety banner language", () => {
     render(<SafetyBanner />);
 
-    expect(screen.getByText(/Research and educational use only/i)).toBeInTheDocument();
-    expect(screen.getByText(/Not a diagnosis/i)).toBeInTheDocument();
-    expect(screen.getByText(/qualified genetics professionals/i)).toBeInTheDocument();
+    expect(screen.getByText(/Research and education only/i)).toBeInTheDocument();
+    expect(screen.getByText(/Not for diagnosis/i)).toBeInTheDocument();
+    expect(screen.getByText(/clinical decision-making/i)).toBeInTheDocument();
   });
 
   it("shows free-text character count and PHI warning", () => {
