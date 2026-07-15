@@ -1,0 +1,50 @@
+{
+  "schema_version": "1.0.0",
+  "platform_roles": {
+    "platform_owner": [
+      "platform.products.manage",
+      "platform.organizations.manage",
+      "platform.audit.view",
+      "platform.entitlements.manage",
+      "platform.users.suspend"
+    ],
+    "platform_security_admin": ["platform.security_events.view", "platform.audit.view"],
+    "platform_support_admin": ["platform.organizations.view"],
+    "platform_auditor": ["platform.audit.view"]
+  },
+  "organization_roles": {
+    "organization_owner": [
+      "genemed.analysis.run",
+      "genemed.analysis.save",
+      "genemed.analysis.view_organization",
+      "genemed.analysis.delete_organization",
+      "genemed.export.create",
+      "genemed.audit.view",
+      "genemed.settings.manage"
+    ],
+    "organization_admin": [
+      "genemed.analysis.run",
+      "genemed.analysis.save",
+      "genemed.analysis.view_organization",
+      "genemed.export.create",
+      "genemed.audit.view"
+    ],
+    "research_lead": [
+      "genemed.analysis.run",
+      "genemed.analysis.save",
+      "genemed.analysis.view_organization",
+      "genemed.export.create"
+    ],
+    "analyst": [
+      "genemed.analysis.run",
+      "genemed.analysis.save",
+      "genemed.analysis.view_own",
+      "genemed.export.create"
+    ],
+    "viewer": ["genemed.analysis.view_own"],
+    "billing_admin_placeholder": []
+  },
+  "deny_by_default": true,
+  "role_source": "server_resolved_membership_only",
+  "client_supplied_roles_trusted": false
+}

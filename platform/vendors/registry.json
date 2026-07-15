@@ -1,0 +1,24 @@
+{
+  "schema_version": "1.0.0",
+  "vendors": [
+    {
+      "id": "database_provider_placeholder",
+      "category": "database",
+      "status": "manual_review_required",
+      "receives_restricted_data": false
+    },
+    {
+      "id": "ai_provider_none",
+      "category": "ai",
+      "status": "not_enabled",
+      "receives_restricted_data": false
+    },
+    {
+      "id": "analytics_none",
+      "category": "analytics",
+      "status": "not_enabled",
+      "receives_restricted_data": false
+    }
+  ],
+  "policy": "No provider may receive phenotype or gene-result data without manual review."
+}

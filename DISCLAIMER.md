@@ -39,3 +39,7 @@ user-provided licensed annotations only. They are not diagnostic evidence, not m
 not a substitute for authoritative review, and not proof of gene-disease causality. The deployment
 operator or uploading admin is responsible for confirming licensing rights and for excluding patient
 or confidential data from uploaded files.
+
+## Logres and Genemed Disclaimer
+
+Genemed by Logres is for research and education only. It is not for diagnosis, treatment, clinical decision-making, or submission of identifiable patient data. Clinical use remains blocked.

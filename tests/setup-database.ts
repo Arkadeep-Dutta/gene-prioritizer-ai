@@ -3,6 +3,18 @@ import { closeSync, existsSync, openSync, rmSync } from "node:fs";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
+async function removeIfExists(path: string) {
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    try {
+      if (existsSync(path)) rmSync(path, { force: true });
+      return;
+    } catch (error) {
+      if (attempt === 4) throw error;
+      await new Promise((resolveRetry) => setTimeout(resolveRetry, 100));
+    }
+  }
+}
+
 export default async function setupDatabase() {
   Object.assign(process.env, {
     NODE_ENV: "test",
@@ -47,7 +59,7 @@ export default async function setupDatabase() {
 
     for (const suffix of ["", "-journal", "-shm", "-wal"]) {
       const path = `${databasePath}${suffix}`;
-      if (existsSync(path)) rmSync(path, { force: true });
+      await removeIfExists(path);
     }
   };
 }

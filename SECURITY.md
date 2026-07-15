@@ -157,3 +157,7 @@ coverage, and build artifacts.
 Use a shared rate-limit backend before relying on rate limits across multi-instance production.
 Keep CSP/security headers enabled, rotate admin secrets through the hosting provider secret store,
 and verify `curl -I /` plus `npm run smoke:api` after deployment.
+
+## Logres Security Foundation
+
+Logres platform checks validate synthetic authentication safety, RBAC, tenant isolation, audit logging, rate limits, secrets redaction, vendor review status, and incident-response readiness. These checks do not claim SOC 2 certification, HIPAA compliance, or independent penetration testing.

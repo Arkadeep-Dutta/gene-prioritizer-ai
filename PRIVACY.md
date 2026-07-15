@@ -118,3 +118,7 @@ in production.
 Docker and CI ignore local `.env` files, SQLite databases, logs, and raw HPO caches. Smoke tests
 check API responses for secret-like text. Public health and data-version endpoints expose safe
 booleans/counts/metadata only, not credentials, raw clinical text, or request bodies.
+
+## Logres Privacy Foundation
+
+The initial Logres/Genemed platform does not accept identifiable patient data. Synthetic demo and research workflows must avoid names, contact details, medical record numbers, dates of birth, provider tokens, and raw phenotype persistence by default.

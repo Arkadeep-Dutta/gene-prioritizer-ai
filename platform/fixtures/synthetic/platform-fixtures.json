@@ -1,0 +1,134 @@
+{
+  "schema_version": "1.0.0",
+  "synthetic_only": true,
+  "users": [
+    {
+      "id": "usr_active_analyst",
+      "status": "active",
+      "synthetic": true
+    },
+    {
+      "id": "usr_disabled",
+      "status": "disabled",
+      "synthetic": true
+    },
+    {
+      "id": "usr_delete_pending",
+      "status": "deletion_pending",
+      "synthetic": true
+    },
+    {
+      "id": "usr_platform_admin",
+      "status": "active",
+      "platform_role": "platform_owner",
+      "synthetic": true
+    },
+    {
+      "id": "usr_org_admin",
+      "status": "active",
+      "synthetic": true
+    },
+    {
+      "id": "usr_viewer",
+      "status": "active",
+      "synthetic": true
+    }
+  ],
+  "organizations": [
+    {
+      "id": "org_a",
+      "slug": "synthetic-alpha",
+      "status": "active"
+    },
+    {
+      "id": "org_b",
+      "slug": "synthetic-beta",
+      "status": "active"
+    },
+    {
+      "id": "org_suspended",
+      "status": "suspended"
+    },
+    {
+      "id": "org_deleted",
+      "status": "deleted"
+    },
+    {
+      "id": "org_expired",
+      "status": "active"
+    }
+  ],
+  "memberships": [
+    {
+      "user_id": "usr_active_analyst",
+      "organization_id": "org_a",
+      "role": "analyst",
+      "status": "active"
+    },
+    {
+      "user_id": "usr_active_analyst",
+      "organization_id": "org_b",
+      "role": "viewer",
+      "status": "active"
+    },
+    {
+      "user_id": "usr_org_admin",
+      "organization_id": "org_a",
+      "role": "organization_admin",
+      "status": "active"
+    },
+    {
+      "user_id": "usr_viewer",
+      "organization_id": "org_a",
+      "role": "viewer",
+      "status": "active"
+    }
+  ],
+  "entitlements": [
+    {
+      "organization_id": "org_a",
+      "product_id": "genemed",
+      "status": "pilot",
+      "source": "synthetic_platform_action"
+    },
+    {
+      "organization_id": "org_b",
+      "product_id": "genemed",
+      "status": "pilot",
+      "source": "synthetic_platform_action"
+    },
+    {
+      "organization_id": "org_expired",
+      "product_id": "genemed",
+      "status": "expired",
+      "source": "synthetic_fixture"
+    }
+  ],
+  "sessions": [
+    {
+      "id": "ses_dev_valid",
+      "user_id": "usr_active_analyst",
+      "adapter": "synthetic_development",
+      "status": "valid",
+      "production_allowed": false
+    },
+    {
+      "id": "ses_expired",
+      "status": "expired"
+    },
+    {
+      "id": "ses_revoked",
+      "status": "revoked"
+    }
+  ],
+  "analysis_records": [
+    {
+      "id": "ana_org_a_001",
+      "organization_id": "org_a",
+      "product_id": "genemed",
+      "owner_user_id": "usr_active_analyst",
+      "raw_phenotype_persisted": false,
+      "ranked_genes": ["GENEA", "GENEB", "GENEC"]
+    }
+  ]
+}

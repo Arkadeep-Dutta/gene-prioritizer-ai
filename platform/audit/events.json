@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0.0",
+  "required_events": [
+    "login",
+    "logout",
+    "role_change",
+    "entitlement_change",
+    "analysis_export",
+    "deletion_request",
+    "denied_cross_tenant_access",
+    "support_access"
+  ],
+  "bounded_metadata": true,
+  "raw_phenotype_allowed": false,
+  "tokens_allowed": false
+}

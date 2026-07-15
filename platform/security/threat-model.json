@@ -1,0 +1,25 @@
+{
+  "schema_version": "1.0.0",
+  "reviewed_at": "2026-07-15",
+  "threats": [
+    {
+      "id": "THREAT-IDOR",
+      "severity": "high",
+      "control_ids": ["CTRL-TENANT-SERVER-AUTH"],
+      "test_ids": ["platform:tenant-isolation:test", "platform:security:test"]
+    },
+    {
+      "id": "THREAT-DEV-AUTH-PROD",
+      "severity": "critical",
+      "control_ids": ["CTRL-AUTH-FAIL-CLOSED"],
+      "test_ids": ["platform:auth:configuration-check"]
+    },
+    {
+      "id": "THREAT-RAW-PHENOTYPE-LOG",
+      "severity": "high",
+      "control_ids": ["CTRL-REDACTION"],
+      "test_ids": ["platform:privacy:validate"]
+    }
+  ],
+  "unresolved_critical": []
+}
