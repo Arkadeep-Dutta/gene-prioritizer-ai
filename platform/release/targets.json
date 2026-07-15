@@ -1,0 +1,28 @@
+{
+  "schema_version": "1.0.0",
+  "targets": {
+    "local_development": {
+      "development_auth_allowed": true
+    },
+    "synthetic_demo": {
+      "development_auth_allowed": true
+    },
+    "internal_research": {
+      "development_auth_allowed": false
+    },
+    "private_research_pilot": {
+      "development_auth_allowed": false
+    },
+    "external_research_pilot": {
+      "development_auth_allowed": false,
+      "requires_manual_reviews": true
+    },
+    "commercial_research": {
+      "development_auth_allowed": false,
+      "requires_manual_reviews": true
+    },
+    "clinical_use": {
+      "blocked": true
+    }
+  }
+}

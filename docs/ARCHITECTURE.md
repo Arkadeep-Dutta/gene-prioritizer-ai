@@ -389,3 +389,7 @@ metadata is safe and optional: `APP_VERSION`, `BUILD_COMMIT_SHA`, `BUILD_TIME`, 
 - [ ] Define update cadence, regression corpus, monitoring, and release approval checklist
 
 No phase may be marked complete when its UI or documentation implies placeholder functionality.
+
+## Logres Platform Architecture
+
+The repository now uses a modular monolith boundary: Logres platform modules under lib/platform and platform registries, Genemed product behavior in the existing product/science paths, and shared infrastructure for release, privacy, and security checks.

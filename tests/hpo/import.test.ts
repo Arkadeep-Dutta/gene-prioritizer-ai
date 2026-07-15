@@ -12,6 +12,14 @@ import { importHpoData } from "@/lib/hpo/import";
 import { readHpoImportMode, resolveHpoImportPlan } from "../../scripts/build-hpo";
 
 const execFileAsync = promisify(execFile);
+const npmCli = process.env.npm_execpath;
+function spawnEnv(overrides: Record<string, string>) {
+  return Object.fromEntries(
+    Object.entries({ ...process.env, ...overrides }).filter((entry): entry is [string, string] => {
+      return typeof entry[1] === "string";
+    }),
+  );
+}
 
 const fixturePaths = {
   ontologyPath: resolve(process.cwd(), "tests/fixtures/hpo/hp.fixture.obo"),
@@ -206,16 +214,19 @@ describe("importHpoData", () => {
     const hpoDataDir = await mkdtemp(resolve(process.cwd(), "hpo-build-"));
 
     try {
-      const { stderr, stdout } = await execFileAsync("npm", ["run", "data:build-hpo"], {
-        cwd: process.cwd(),
-        env: {
-          ...process.env,
-          HPO_IMPORT_MODE: "fixture",
-          HPO_ASSOCIATION_IMPORT_LIMIT: "2",
-          HPO_DATA_DIR: hpoDataDir,
+      const { stderr, stdout } = await execFileAsync(
+        process.execPath,
+        [npmCli ?? "npm", "run", "data:build-hpo"],
+        {
+          cwd: process.cwd(),
+          env: spawnEnv({
+            HPO_IMPORT_MODE: "fixture",
+            HPO_ASSOCIATION_IMPORT_LIMIT: "2",
+            HPO_DATA_DIR: hpoDataDir,
+          }),
+          timeout: 60_000,
         },
-        timeout: 60_000,
-      });
+      );
       const output = stdout + "\n" + stderr;
 
       expect(output).toContain("Starting HPO build...");

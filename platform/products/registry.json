@@ -1,0 +1,44 @@
+{
+  "schema_version": "1.0.0",
+  "platform_id": "logres",
+  "primary_product_id": "genemed",
+  "products": [
+    {
+      "product_id": "genemed",
+      "display_name": "Genemed",
+      "short_name": "Genemed",
+      "description": "Research-use phenotype-to-gene prioritization product hosted on the Logres platform.",
+      "route": "/products/genemed",
+      "app_route": "/app/genemed",
+      "api_namespace": "/api",
+      "status": "private_research_pilot",
+      "visibility": "registered_first_product",
+      "minimum_platform_role": "none",
+      "entitlement_key": "product.genemed.research",
+      "required_permissions": [
+        "genemed.analysis.run",
+        "genemed.analysis.view_own",
+        "genemed.export.create",
+        "genemed.data_status.view"
+      ],
+      "feature_flags": ["synthetic_demo", "fixture_hpo_import", "full_hpo_import_when_explicit"],
+      "data_classification": "synthetic_or_research_non_identifying",
+      "research_use_status": "allowed_with_disclaimer",
+      "clinical_use_status": "blocked",
+      "privacy_profile": "no_identifiable_patient_data_initial_product",
+      "security_profile": "tenant_scoped_server_authorization_required",
+      "release_version": "logres-foundation-v1",
+      "documentation_links": [
+        "docs/platform/PRODUCT_REGISTRY.md",
+        "docs/platform/GENEMED_MIGRATION_PLAN.md"
+      ],
+      "support_level": "research_pilot_readiness",
+      "created_at": "2026-07-15T00:00:00.000Z",
+      "updated_at": "2026-07-15T00:00:00.000Z"
+    }
+  ],
+  "future_product_template": {
+    "status": "template_only_nonfunctional",
+    "note": "Future products must add their own privacy, security, data, and clinical-use profiles before registration."
+  }
+}

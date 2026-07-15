@@ -151,3 +151,7 @@ npm run data:update
 HGNC validation and PubMed literature search remain optional outbound services. Missing API keys do
 not block local deployment. GeneCards licensed import remains disabled by default and must not be
 enabled unless the deployment has license rights and retention controls.
+
+## Logres Data Source Boundary
+
+This platform foundation does not add biomedical data sources. Genemed data-source behavior remains governed by the existing HPO/HGNC/literature controls and release gates.

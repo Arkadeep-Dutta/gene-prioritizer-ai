@@ -444,3 +444,7 @@ curl -s http://localhost:3000/api/health | jq '.data.data.counts'
 ```
 
 GeneCards remains linkout/import-only as documented elsewhere; HPO import modes do not scrape GeneCards or add OMIM/ClinVar/VCF/Exomiser/model-training behavior.
+
+## Logres Platform Foundation
+
+Logres is the parent genomic software platform. Genemed is the first research-use product registered on Logres. Genemed remains research and education only; clinical use is blocked and identifiable patient data must not be submitted.

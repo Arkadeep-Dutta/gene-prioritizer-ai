@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0.0",
+  "policies": [
+    {
+      "id": "synthetic_demo_no_persistence",
+      "raw_input_retention": "none",
+      "saved_result_retention": "disabled"
+    },
+    {
+      "id": "research_workspace_controlled",
+      "raw_input_retention": "not_persisted_by_default",
+      "saved_result_retention": "organization_policy",
+      "deletion": "dry_run_then_authorized_delete"
+    }
+  ]
+}

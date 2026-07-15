@@ -44,3 +44,6 @@ FAILFILE*
 # Local Docker environment file
 .env.docker
 
+platform/generated/reports/*
+platform/generated/security-questionnaire/*
+!platform/generated/**/.gitkeep

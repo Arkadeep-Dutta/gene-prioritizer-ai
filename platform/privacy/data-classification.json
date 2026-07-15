@@ -1,0 +1,31 @@
+{
+  "schema_version": "1.0.0",
+  "classifications": [
+    {
+      "id": "public_docs",
+      "allowed": true
+    },
+    {
+      "id": "synthetic_demo",
+      "allowed": true
+    },
+    {
+      "id": "research_non_identifying",
+      "allowed": true
+    },
+    {
+      "id": "identifiable_patient_data",
+      "allowed": false
+    },
+    {
+      "id": "genetic_raw_variant_data",
+      "allowed": false
+    }
+  ],
+  "minimization": [
+    "No date of birth",
+    "No medical record number",
+    "No provider token exposure",
+    "No raw phenotype persistence by default"
+  ]
+}

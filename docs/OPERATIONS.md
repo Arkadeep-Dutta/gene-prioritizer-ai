@@ -105,3 +105,7 @@ curl -s http://localhost:3000/api/health | jq '.data.data.counts'
 ```
 
 GeneCards remains linkout/import-only as documented elsewhere; HPO import modes do not scrape GeneCards or add OMIM/ClinVar/VCF/Exomiser/model-training behavior.
+
+## Logres Platform Operations
+
+Use synthetic fixtures for platform tests. Do not add real users, organizations, patient data, credentials, or vendor evidence to the repository. Generated platform reports live under platform/generated.

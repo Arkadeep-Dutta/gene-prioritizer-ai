@@ -470,3 +470,7 @@ curl -s http://localhost:3000/api/health | jq '.data.data.counts'
 ```
 
 GeneCards remains linkout/import-only as documented elsewhere; HPO import modes do not scrape GeneCards or add OMIM/ClinVar/VCF/Exomiser/model-training behavior.
+
+## Logres Deployment Gate
+
+Run npm run release:logres-check before a Logres-hosted release. Production authentication must be configured with a provider-backed setup; synthetic development authentication is blocked in production.
