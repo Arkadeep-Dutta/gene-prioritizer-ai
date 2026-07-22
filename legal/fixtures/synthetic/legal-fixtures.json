@@ -1,0 +1,45 @@
+{
+  "schema_version": "1.0.0",
+  "synthetic_only": true,
+  "acceptance_events": [
+    {
+      "id": "acc_syn_001",
+      "user_id": "usr_active_analyst",
+      "organization_id": "org_a",
+      "document_id": "research-disclaimer",
+      "document_version": "0.1.0-draft",
+      "accepted_at": "2026-07-22T00:00:00.000Z",
+      "server_recorded": true,
+      "client_trusted": false,
+      "synthetic": true
+    }
+  ],
+  "onboarding_cases": [
+    {
+      "id": "onboard_syn_org_a",
+      "organization_id": "org_a",
+      "release_target": "synthetic_demo",
+      "policy_acceptance_status": "accepted_synthetic",
+      "org_agreement_status": "not_required_for_synthetic_demo",
+      "commercial_entitlement_status": "blocked_until_external_contracts",
+      "clinical_use_status": "blocked"
+    }
+  ],
+  "release_fixtures": [
+    {
+      "id": "release_syn",
+      "target": "synthetic_demo",
+      "expected_result": "pass_with_readiness_disclaimers"
+    },
+    {
+      "id": "release_commercial",
+      "target": "commercial_research",
+      "expected_result": "blocked_without_external_contract_evidence"
+    },
+    {
+      "id": "release_clinical",
+      "target": "clinical_use",
+      "expected_result": "blocked"
+    }
+  ]
+}

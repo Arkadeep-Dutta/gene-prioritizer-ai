@@ -47,3 +47,17 @@ FAILFILE*
 platform/generated/reports/*
 platform/generated/security-questionnaire/*
 !platform/generated/**/.gitkeep
+
+# Legal readiness outputs and private external evidence
+/legal/generated/customer-packets/*
+/legal/generated/counsel-packets/*
+/legal/generated/agreement-reports/*
+/legal/private/
+/legal/external-evidence/
+/legal/executed/
+/legal/signatures/
+/legal/insurance/private/
+*.signed.pdf
+!legal/generated/**/.gitkeep
+/legal/generated/policy-reports/*
+!legal/generated/**/.gitkeep

@@ -1,0 +1,40 @@
+{
+  "schema_version": "1.0.0",
+  "status": "readiness_inventory_only_not_coverage",
+  "no_policy_bound_or_claimed": true,
+  "external_broker_or_carrier_review_required": true,
+  "required_external_fields": [
+    "carrier",
+    "policy_number",
+    "coverage_limits",
+    "exclusions",
+    "effective_dates",
+    "named_insured",
+    "retroactive_date",
+    "cyber_requirements"
+  ],
+  "prohibited_in_git": [
+    "policy_number",
+    "signed_policy",
+    "binder",
+    "premium_invoice",
+    "broker_legal_advice"
+  ],
+  "readiness_questions": [
+    {
+      "id": "cyber-liability",
+      "status": "unreviewed",
+      "note": "Assess with qualified insurance broker before external/commercial release."
+    },
+    {
+      "id": "technology-e-o",
+      "status": "unreviewed",
+      "note": "No coverage represented."
+    },
+    {
+      "id": "professional-liability",
+      "status": "unreviewed",
+      "note": "Clinical use is blocked; counsel/broker review required for scope."
+    }
+  ]
+}

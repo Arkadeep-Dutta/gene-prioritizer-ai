@@ -1,0 +1,76 @@
+{
+  "schema_version": "1.0.0",
+  "commitment_policy": "Every external promise must map to an implemented control, published limitation, or explicit blocker. Unsupported promises are rejected by legal:commitments:validate.",
+  "clauses": [
+    {
+      "id": "research-use-only",
+      "text": "Logres/Genemed is for research and education only.",
+      "support_status": "implemented",
+      "control_refs": ["platform/products/registry.json", "components/layout/SafetyBanner.tsx"],
+      "prohibited_without_review": false
+    },
+    {
+      "id": "clinical-use-blocked",
+      "text": "Clinical diagnosis, treatment, patient-care, and autonomous causal-gene determination are prohibited.",
+      "support_status": "implemented",
+      "control_refs": ["platform/products/registry.json", "scripts/platform/cli.ts"],
+      "prohibited_without_review": false
+    },
+    {
+      "id": "no-identifiable-patient-data",
+      "text": "Users must not submit identifiable patient data or protected health information.",
+      "support_status": "implemented",
+      "control_refs": ["platform/privacy/data-classification.json", "PRIVACY.md"],
+      "prohibited_without_review": false
+    },
+    {
+      "id": "no-payment-claims",
+      "text": "No payments, billing, or paid-service activation are implemented by default.",
+      "support_status": "implemented",
+      "control_refs": ["platform/fixtures/synthetic/platform-fixtures.json"],
+      "prohibited_without_review": false
+    },
+    {
+      "id": "no-hipaa-default",
+      "text": "The repository does not claim HIPAA compliance by default.",
+      "support_status": "documented_limitation",
+      "control_refs": ["PRIVACY.md", "SECURITY.md"],
+      "prohibited_without_review": false
+    },
+    {
+      "id": "no-soc2-certification",
+      "text": "SOC 2 readiness artifacts are not certification or independent audit evidence.",
+      "support_status": "documented_limitation",
+      "control_refs": ["SECURITY.md", "docs/platform/SOC2_READINESS.md"],
+      "prohibited_without_review": false
+    },
+    {
+      "id": "no-sla-uptime",
+      "text": "No uptime, service-level, support-response, liability cap, jurisdiction, or dispute-resolution term is selected in Git.",
+      "support_status": "blocked_pending_counsel",
+      "control_refs": ["legal/templates/enterprise-agreement-issues-list.md"],
+      "prohibited_without_review": true
+    },
+    {
+      "id": "data-processing-addendum",
+      "text": "A DPA template can be prepared for counsel review without claiming GDPR sufficiency.",
+      "support_status": "draft_only",
+      "control_refs": ["legal/templates/data-processing-addendum.md"],
+      "prohibited_without_review": true
+    },
+    {
+      "id": "baa-position",
+      "text": "BAA necessity is not universally asserted and requires counsel/customer workflow review.",
+      "support_status": "draft_only",
+      "control_refs": ["legal/templates/baa-position-memo.md"],
+      "prohibited_without_review": true
+    },
+    {
+      "id": "ip-publication",
+      "text": "Research publication, IP ownership, and dataset restrictions require written agreement terms reviewed by qualified counsel.",
+      "support_status": "draft_only",
+      "control_refs": ["legal/templates/ip-and-publication-exhibit.md"],
+      "prohibited_without_review": true
+    }
+  ]
+}

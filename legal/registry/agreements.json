@@ -1,0 +1,111 @@
+{
+  "schema_version": "1.0.0",
+  "separation_policy": "User click acceptance and organization contract execution are separate. Client-side acceptance is not trusted for entitlements. Real executed agreements and signatures must remain outside Git.",
+  "agreement_requirements": [
+    {
+      "release_target": "synthetic_demo",
+      "requires_user_policy_acceptance": true,
+      "requires_org_execution": false,
+      "requires_dpa": false,
+      "requires_baa": false,
+      "allows_paid_entitlement": false,
+      "allows_clinical_use": false
+    },
+    {
+      "release_target": "internal_research",
+      "requires_user_policy_acceptance": true,
+      "requires_org_execution": false,
+      "requires_dpa": false,
+      "requires_baa": false,
+      "allows_paid_entitlement": false,
+      "allows_clinical_use": false
+    },
+    {
+      "release_target": "external_research_pilot",
+      "requires_user_policy_acceptance": true,
+      "requires_org_execution": true,
+      "requires_dpa": "privacy_counsel_determination_required",
+      "requires_baa": "workflow_counsel_determination_required",
+      "allows_paid_entitlement": false,
+      "allows_clinical_use": false
+    },
+    {
+      "release_target": "commercial_research",
+      "requires_user_policy_acceptance": true,
+      "requires_org_execution": true,
+      "requires_dpa": "privacy_counsel_determination_required",
+      "requires_baa": "workflow_counsel_determination_required",
+      "allows_paid_entitlement": true,
+      "allows_clinical_use": false
+    },
+    {
+      "release_target": "clinical_use",
+      "blocked": true,
+      "allows_clinical_use": false
+    }
+  ],
+  "synthetic_agreements": [
+    {
+      "id": "agr_synthetic_policy_click_001",
+      "organization_id": "org_a",
+      "user_id": "usr_active_analyst",
+      "type": "user_policy_acceptance",
+      "status": "accepted_synthetic",
+      "document_ids": ["terms-of-service-draft", "privacy-policy-draft", "research-disclaimer"],
+      "document_hashes": ["computed_by_validation"],
+      "accepted_at": "2026-07-22T00:00:00.000Z",
+      "accepted_by_server_record": true,
+      "external_evidence_ref": null,
+      "synthetic": true
+    },
+    {
+      "id": "agr_synthetic_research_pilot_unexecuted",
+      "organization_id": "org_a",
+      "type": "research_pilot_agreement",
+      "status": "draft_not_executed",
+      "document_ids": [
+        "pilot-evaluation-agreement-draft",
+        "research-collaboration-agreement-draft",
+        "security-exhibit-draft"
+      ],
+      "executed_at": null,
+      "signatory_authority_verified": false,
+      "external_evidence_ref": null,
+      "synthetic": true
+    },
+    {
+      "id": "agr_synthetic_dpa_unexecuted",
+      "organization_id": "org_a",
+      "type": "dpa",
+      "status": "draft_not_executed",
+      "document_ids": ["data-processing-addendum-draft"],
+      "executed_at": null,
+      "signatory_authority_verified": false,
+      "external_evidence_ref": null,
+      "synthetic": true
+    }
+  ],
+  "signatory_roles": [
+    {
+      "role": "organization_owner",
+      "may_accept_user_policy": false,
+      "may_request_contract": true,
+      "may_execute_contract": false,
+      "external_authority_evidence_required": true
+    },
+    {
+      "role": "platform_owner",
+      "may_accept_user_policy": false,
+      "may_request_contract": true,
+      "may_execute_contract": false,
+      "external_authority_evidence_required": true
+    },
+    {
+      "role": "analyst",
+      "may_accept_user_policy": true,
+      "may_request_contract": false,
+      "may_execute_contract": false,
+      "external_authority_evidence_required": false
+    }
+  ]
+}

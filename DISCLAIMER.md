@@ -43,3 +43,7 @@ or confidential data from uploaded files.
 ## Logres and Genemed Disclaimer
 
 Genemed by Logres is for research and education only. It is not for diagnosis, treatment, clinical decision-making, or submission of identifiable patient data. Clinical use remains blocked.
+
+## Legal Review Status
+
+The disclaimer is connected to draft legal-readiness materials and requires qualified review before external contractual reliance. It does not authorize clinical use or identifiable patient data.
