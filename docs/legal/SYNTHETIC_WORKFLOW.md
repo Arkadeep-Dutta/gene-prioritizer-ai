@@ -1,0 +1,3 @@
+# Synthetic Legal Workflow
+
+Run the following offline workflow: `npm run legal:documents:validate`, `npm run legal:clauses:validate`, `npm run legal:reviews:validate`, `npm run legal:agreements:validate`, `npm run legal:acceptance:validate`, `npm run legal:commitments:validate`, `npm run legal:claims:validate`, `npm run legal:privacy:consistency`, `npm run legal:counsel-packet:generate`, `npm run legal:customer-packet:generate`, `npm run legal:insurance:readiness`, `npm run legal:onboarding:readiness`, `npm run legal:report`, and `npm run release:legal-check`. The workflow uses only synthetic fixtures.

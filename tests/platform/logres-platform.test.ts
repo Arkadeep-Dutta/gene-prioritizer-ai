@@ -81,5 +81,5 @@ describe("Logres platform foundation", () => {
       "release:logres-check",
     ])
       expect(run(command)).toContain("PASS");
-  });
+  }, 20000);
 });

@@ -1,0 +1,67 @@
+{
+  "schema_version": "1.0.0",
+  "evidence_policy": "Do not store attorney advice or privileged legal analysis in Git. Store only non-sensitive external evidence references after manual review.",
+  "reviews": [
+    {
+      "id": "review-public-policy-drafts",
+      "area": "public_policy",
+      "status": "not_started",
+      "requested_at": null,
+      "completed_at": null,
+      "qualified_reviewer_ref": null,
+      "external_evidence_ref": null,
+      "conclusions_stored_in_git": false,
+      "blockers": ["COUNSEL_REVIEW_REQUIRED placeholders remain unresolved"]
+    },
+    {
+      "id": "review-commercial-contract-drafts",
+      "area": "commercial_contracting",
+      "status": "not_started",
+      "requested_at": null,
+      "completed_at": null,
+      "qualified_reviewer_ref": null,
+      "external_evidence_ref": null,
+      "conclusions_stored_in_git": false,
+      "blockers": [
+        "No executed contract authority; no governing law, dispute, liability, SLA, or signatory selections"
+      ]
+    },
+    {
+      "id": "review-regulatory-position",
+      "area": "regulatory",
+      "status": "not_started",
+      "requested_at": null,
+      "completed_at": null,
+      "qualified_reviewer_ref": null,
+      "external_evidence_ref": null,
+      "conclusions_stored_in_git": false,
+      "blockers": ["No regulatory conclusion; clinical use remains blocked"]
+    },
+    {
+      "id": "review-privacy-dpa-baa",
+      "area": "privacy",
+      "status": "not_started",
+      "requested_at": null,
+      "completed_at": null,
+      "qualified_reviewer_ref": null,
+      "external_evidence_ref": null,
+      "conclusions_stored_in_git": false,
+      "blockers": [
+        "No final privacy-law determination; no PHI acceptance; DPA/BAA drafts require counsel"
+      ]
+    },
+    {
+      "id": "review-ip-licensing",
+      "area": "ip_licensing",
+      "status": "not_started",
+      "requested_at": null,
+      "completed_at": null,
+      "qualified_reviewer_ref": null,
+      "external_evidence_ref": null,
+      "conclusions_stored_in_git": false,
+      "blockers": [
+        "No freedom-to-operate, trademark, data-license, or patent clearance represented"
+      ]
+    }
+  ]
+}

@@ -161,3 +161,7 @@ and verify `curl -I /` plus `npm run smoke:api` after deployment.
 ## Logres Security Foundation
 
 Logres platform checks validate synthetic authentication safety, RBAC, tenant isolation, audit logging, rate limits, secrets redaction, vendor review status, and incident-response readiness. These checks do not claim SOC 2 certification, HIPAA compliance, or independent penetration testing.
+
+## Contract and Insurance Readiness
+
+Security exhibits and insurance readiness materials are draft/readiness artifacts only. They do not claim SOC 2 certification, HIPAA compliance, independent penetration testing, bound coverage, uptime, support response commitments, or commercial authorization.

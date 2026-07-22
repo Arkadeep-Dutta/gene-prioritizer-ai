@@ -13,12 +13,12 @@ import { readHpoImportMode, resolveHpoImportPlan } from "../../scripts/build-hpo
 
 const execFileAsync = promisify(execFile);
 const npmCli = process.env.npm_execpath;
-function spawnEnv(overrides: Record<string, string>) {
+function spawnEnv(overrides: Record<string, string>): NodeJS.ProcessEnv {
   return Object.fromEntries(
     Object.entries({ ...process.env, ...overrides }).filter((entry): entry is [string, string] => {
       return typeof entry[1] === "string";
     }),
-  );
+  ) as NodeJS.ProcessEnv;
 }
 
 const fixturePaths = {

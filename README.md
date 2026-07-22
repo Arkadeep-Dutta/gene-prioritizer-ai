@@ -448,3 +448,17 @@ GeneCards remains linkout/import-only as documented elsewhere; HPO import modes 
 ## Logres Platform Foundation
 
 Logres is the parent genomic software platform. Genemed is the first research-use product registered on Logres. Genemed remains research and education only; clinical use is blocked and identifiable patient data must not be submitted.
+
+## Legal Readiness and Contracting
+
+Logres now includes a draft legal-readiness foundation for policy governance, counsel packets, agreement gates, policy acceptance, insurance readiness, and synthetic release checks. These artifacts are structured drafts only. They do not represent legal advice, counsel approval, executed agreements, insurance coverage, compliance certification, regulatory clearance, or commercial authorization.
+
+Useful offline commands:
+
+- `npm run legal:documents:validate`
+- `npm run legal:agreements:validate`
+- `npm run legal:privacy:consistency`
+- `npm run legal:report`
+- `npm run release:legal-check`
+
+Real executed agreements, signatures, legal opinions, privileged negotiation materials, and insurance policies must remain outside Git. Genemed remains research and education only; clinical use and identifiable patient data remain blocked.

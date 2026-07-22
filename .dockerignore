@@ -32,3 +32,15 @@ cache
 AAA*
 CODEX_*
 FAILFILE*
+
+# Legal/private readiness artifacts
+legal/generated/customer-packets
+legal/generated/counsel-packets
+legal/generated/agreement-reports
+legal/private
+legal/external-evidence
+legal/executed
+legal/signatures
+legal/insurance/private
+*.signed.pdf
+legal/generated/policy-reports

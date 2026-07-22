@@ -122,3 +122,7 @@ booleans/counts/metadata only, not credentials, raw clinical text, or request bo
 ## Logres Privacy Foundation
 
 The initial Logres/Genemed platform does not accept identifiable patient data. Synthetic demo and research workflows must avoid names, contact details, medical record numbers, dates of birth, provider tokens, and raw phenotype persistence by default.
+
+## Legal Draft Status
+
+The legal registry includes a Privacy Policy draft with COUNSEL_REVIEW_REQUIRED placeholders. It reflects repository-grounded behavior but is not a final privacy-law determination, DPA conclusion, BAA conclusion, HIPAA program, or compliance certification.
